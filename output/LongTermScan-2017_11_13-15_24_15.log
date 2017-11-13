@@ -1,0 +1,215 @@
+[15:24:15] INFO     Welcome to Long Term Test Control!
+[15:24:15] INFO     Log information will be saved in output/LongTermScan-2017_11_13-15_24_15.log
+[15:24:15] INFO     Found config file config/SingleChannelAnalysis101.cfg
+[15:24:15] INFO     Read in config file parameters
+[15:24:15] INFO     -------------------------------
+[15:24:15] INFO     [SerialPorts]
+[15:24:15] INFO     	keithley2700 = /dev/ttyUSB1
+[15:24:15] INFO     	isegt2dp = /dev/ttyUSB0
+[15:24:15] INFO     [Sensors]
+[15:24:15] INFO     	limleakcurr = 30000.0
+[15:24:15] INFO     	sensorlabel1 = Leer
+[15:24:15] INFO     	sensorlabel2 = Leer
+[15:24:15] INFO     	sensorlabel3 = Leer
+[15:24:15] INFO     	sensorlabel4 = Leer
+[15:24:15] INFO     	sensorlabel5 = Leer
+[15:24:15] INFO     	sensorlabel6 = Leer
+[15:24:15] INFO     	sensorlabel7 = 30211132911720
+[15:24:15] INFO     	sensorlabel8 = 30211132911715
+[15:24:15] INFO     	sensorlabel9 = 30211132911708
+[15:24:15] INFO     	sensorlabel10 = Unverbunden
+[15:24:15] INFO     [DCVoltageScan]
+[15:24:15] INFO     	voltchannel = 2
+[15:24:15] INFO     	dcvoltage = 150
+[15:24:15] INFO     	polarity = -
+[15:24:15] INFO     	scanchannels = 107:109
+[15:24:15] INFO     	voltagerange = auto
+[15:24:15] INFO     	tbm = 60
+[15:24:15] INFO     	writeeachtrigger = 1
+[15:24:15] INFO     	maxtime = 3.0
+[15:24:15] INFO     [IVCurves]
+[15:24:15] INFO     	enable = 0
+[15:24:15] INFO     	voltagesteps = 5
+[15:24:15] INFO     	scaneachtrigger = 5
+[15:24:15] INFO     [HumidityReadout]
+[15:24:15] INFO     	humlevel = 20
+[15:24:15] INFO     	mntpath = HumidityStabilization/
+[15:24:15] INFO     -------------------------------
+[15:24:15] INFO     Opening serial port to Keithley 2700
+[15:24:15] INFO     Serial port to Keithley 2700 opened
+[15:24:15] INFO     Opening serial port to Iseg T2DP
+[15:24:15] INFO     Serial port to Iseg T2DP opened
+[15:24:15] INFO     Security Demon succesfully started
+[15:24:16] INFO     Please check manually if the HV switch of CH2 is turned on at Iseg T2DP
+[15:24:16] INFO     Is the HV switch turned on? [Y]: 
+[15:24:17] INFO     USER INPUT: Y
+[15:24:17] WARNING  HUMIDITY CONTROL: Current humidity level is below desired value. However scan will be started and once the humidity level has reached desired value it will be stabilized.
+[15:24:17] INFO     Configuring Keithley 2700
+[15:24:17] INFO     Status of digital output channel (111:112): (1,1)
+[15:24:18] INFO     Binary status of digital output lines in channels @111: 11000000
+[15:24:18] INFO     Binary status of digital output lines in channels @112: 00000001
+[15:24:18] INFO     When triggered, scan will be measuring DC voltage with automatic range in 3 channels: @107,108,109
+[15:24:18] INFO     Configuring iseg T2DP
+[15:24:19] INFO     CH2 polarity will be set to P2 = - . Please wait a moment
+[15:24:23] INFO     Polarity setting of CH2 is P2 = -
+[15:24:25] INFO     CH2 voltage will be set to U2 = 150 V. Please wait a moment!
+[15:24:31] INFO     HUMIDITY CONTROL: Starting humidity stabilization program
+[15:24:51] INFO     Measurement triggered.
+[15:24:51] INFO     Measured DC currents: 
+[15:24:51] INFO     [1.785940885e-05, 6.33606315e-07, 2.9081827000000003e-07]
+[15:25:52] INFO     Measurement triggered.
+[15:25:52] INFO     Measured DC currents: 
+[15:25:52] INFO     [1.7592524300000002e-05, 6.147727e-07, 2.8910776499999997e-07]
+[15:26:53] INFO     Measurement triggered.
+[15:26:53] INFO     Measured DC currents: 
+[15:26:53] INFO     [1.7253814924999998e-05, 7.1228139e-07, 2.8867796e-07]
+[15:27:54] INFO     Measurement triggered.
+[15:27:54] INFO     Measured DC currents: 
+[15:27:54] INFO     [1.6813501125e-05, 7.5898476e-07, 2.88350395e-07]
+[15:28:55] INFO     Measurement triggered.
+[15:28:55] INFO     Measured DC currents: 
+[15:28:55] INFO     [1.6649063825e-05, 9.063845875e-07, 2.880251775e-07]
+[15:29:56] INFO     Measurement triggered.
+[15:29:56] INFO     Measured DC currents: 
+[15:29:56] INFO     [1.6720819475e-05, 1.0819390425e-06, 2.8804222e-07]
+[15:30:57] INFO     Measurement triggered.
+[15:30:57] INFO     Measured DC currents: 
+[15:30:57] INFO     [1.6721438175e-05, 1.2515364575e-06, 2.87773535e-07]
+[15:31:57] INFO     Measurement triggered.
+[15:31:57] INFO     Measured DC currents: 
+[15:31:57] INFO     [1.6564984325e-05, 1.3419421025e-06, 2.8786638749999997e-07]
+[15:32:58] INFO     Measurement triggered.
+[15:32:58] INFO     Measured DC currents: 
+[15:32:58] INFO     [1.67902255e-05, 1.54853046e-06, 2.8775856e-07]
+[15:33:59] INFO     Measurement triggered.
+[15:33:59] INFO     Measured DC currents: 
+[15:33:59] INFO     [1.5509216775000003e-05, 1.67385757e-06, 2.87605225e-07]
+[15:35:00] INFO     Measurement triggered.
+[15:35:00] INFO     Measured DC currents: 
+[15:35:00] INFO     [1.402132035e-05, 1.9048905375e-06, 2.8745506e-07]
+[15:36:01] INFO     Measurement triggered.
+[15:36:01] INFO     Measured DC currents: 
+[15:36:01] INFO     [1.2234615099999999e-05, 2.106558085e-06, 2.8727883499999997e-07]
+[15:37:02] INFO     Measurement triggered.
+[15:37:02] INFO     Measured DC currents: 
+[15:37:02] INFO     [1.2292341e-05, 2.2606207425e-06, 2.87346075e-07]
+[15:38:03] INFO     Measurement triggered.
+[15:38:03] INFO     Measured DC currents: 
+[15:38:03] INFO     [1.2446805249999998e-05, 2.3308210075e-06, 2.87290235e-07]
+[15:39:03] INFO     Measurement triggered.
+[15:39:03] INFO     Measured DC currents: 
+[15:39:03] INFO     [1.3474698075e-05, 1.8812769649999999e-06, 2.87237485e-07]
+[15:40:04] INFO     Measurement triggered.
+[15:40:04] INFO     Measured DC currents: 
+[15:40:04] INFO     [1.32388711e-05, 1.51665017e-06, 2.87036485e-07]
+[15:41:05] INFO     Measurement triggered.
+[15:41:05] INFO     Measured DC currents: 
+[15:41:05] INFO     [1.4072047475e-05, 1.4507982125e-06, 2.869533375e-07]
+[15:42:06] INFO     Measurement triggered.
+[15:42:06] INFO     Measured DC currents: 
+[15:42:06] INFO     [1.4090458150000001e-05, 1.37283504e-06, 2.872007525e-07]
+[15:43:07] INFO     Measurement triggered.
+[15:43:07] INFO     Measured DC currents: 
+[15:43:07] INFO     [1.5117341275e-05, 1.4421987524999998e-06, 2.86957305e-07]
+[15:44:08] INFO     Measurement triggered.
+[15:44:08] INFO     Measured DC currents: 
+[15:44:08] INFO     [1.4958347075000001e-05, 1.413767635e-06, 2.86900495e-07]
+[15:45:08] INFO     Measurement triggered.
+[15:45:08] INFO     Measured DC currents: 
+[15:45:08] INFO     [1.5047434575e-05, 1.48759812e-06, 2.870964625e-07]
+[15:46:09] INFO     Measurement triggered.
+[15:46:09] INFO     Measured DC currents: 
+[15:46:09] INFO     [1.499230265e-05, 1.454063655e-06, 2.86988765e-07]
+[15:47:10] INFO     Measurement triggered.
+[15:47:10] INFO     Measured DC currents: 
+[15:47:10] INFO     [1.54661286e-05, 1.4982894075e-06, 2.870148225e-07]
+[15:48:11] INFO     Measurement triggered.
+[15:48:11] INFO     Measured DC currents: 
+[15:48:11] INFO     [1.5720851425e-05, 1.6277788575e-06, 2.869395175e-07]
+[15:49:12] INFO     Measurement triggered.
+[15:49:12] INFO     Measured DC currents: 
+[15:49:12] INFO     [1.6574419725e-05, 1.6358968625e-06, 2.870458175e-07]
+[15:50:13] INFO     Measurement triggered.
+[15:50:13] INFO     Measured DC currents: 
+[15:50:13] INFO     [1.6859461075e-05, 1.5814633675e-06, 2.8699007e-07]
+[15:51:14] INFO     Measurement triggered.
+[15:51:14] INFO     Measured DC currents: 
+[15:51:14] INFO     [1.76593411e-05, 1.4418604974999998e-06, 2.869512325e-07]
+[15:52:14] INFO     Measurement triggered.
+[15:52:14] INFO     Measured DC currents: 
+[15:52:14] INFO     [1.7656344175e-05, 1.497945785e-06, 2.86969245e-07]
+[15:53:15] INFO     Measurement triggered.
+[15:53:15] INFO     Measured DC currents: 
+[15:53:15] INFO     [1.7883815775e-05, 1.5674877174999998e-06, 2.8691262e-07]
+[15:54:16] INFO     Measurement triggered.
+[15:54:16] INFO     Measured DC currents: 
+[15:54:16] INFO     [1.8170746575e-05, 1.5514218799999998e-06, 2.868850525e-07]
+[15:55:17] INFO     Measurement triggered.
+[15:55:17] INFO     Measured DC currents: 
+[15:55:17] INFO     [1.8323459625e-05, 1.6825297475000002e-06, 2.86939685e-07]
+[15:56:18] INFO     Measurement triggered.
+[15:56:18] INFO     Measured DC currents: 
+[15:56:18] INFO     [1.857453465e-05, 1.67752266e-06, 2.8695047e-07]
+[15:57:19] INFO     Measurement triggered.
+[15:57:19] INFO     Measured DC currents: 
+[15:57:19] INFO     [1.83509624e-05, 1.6370260724999998e-06, 2.8708389000000003e-07]
+[15:58:20] INFO     Measurement triggered.
+[15:58:20] INFO     Measured DC currents: 
+[15:58:20] INFO     [1.85034597e-05, 1.809310465e-06, 2.868298825e-07]
+[15:59:20] INFO     Measurement triggered.
+[15:59:20] INFO     Measured DC currents: 
+[15:59:20] INFO     [1.8805612325e-05, 1.7261935775000001e-06, 2.870197225e-07]
+[16:00:21] INFO     Measurement triggered.
+[16:00:21] INFO     Measured DC currents: 
+[16:00:21] INFO     [1.8779243225e-05, 2.0348225525e-06, 2.870733475e-07]
+[16:01:22] INFO     Measurement triggered.
+[16:01:22] INFO     Measured DC currents: 
+[16:01:22] INFO     [1.8781098125e-05, 2.087902575e-06, 2.86580585e-07]
+[16:02:23] INFO     Measurement triggered.
+[16:02:23] INFO     Measured DC currents: 
+[16:02:23] INFO     [1.888236165e-05, 2.1343289325e-06, 2.865992125e-07]
+[16:03:24] INFO     Measurement triggered.
+[16:03:24] INFO     Measured DC currents: 
+[16:03:24] INFO     [1.8890575175e-05, 2.2149263324999997e-06, 2.866556875e-07]
+[16:04:25] INFO     Measurement triggered.
+[16:04:25] INFO     Measured DC currents: 
+[16:04:25] INFO     [1.8872730725e-05, 2.1153959625e-06, 2.868203625e-07]
+[16:05:26] INFO     Measurement triggered.
+[16:05:26] INFO     Measured DC currents: 
+[16:05:26] INFO     [1.9025754925e-05, 2.1971696625e-06, 2.8702080250000004e-07]
+[16:06:26] INFO     Measurement triggered.
+[16:06:26] INFO     Measured DC currents: 
+[16:06:26] INFO     [1.916100025e-05, 2.2101303924999997e-06, 2.8717806500000003e-07]
+[16:07:27] INFO     Measurement triggered.
+[16:07:27] INFO     Measured DC currents: 
+[16:07:27] INFO     [1.9254995575e-05, 2.2739823175e-06, 2.869550875e-07]
+[16:08:28] INFO     Measurement triggered.
+[16:08:28] INFO     Measured DC currents: 
+[16:08:28] INFO     [1.93731749e-05, 2.27755487e-06, 2.8676182e-07]
+[16:09:29] INFO     Measurement triggered.
+[16:09:29] INFO     Measured DC currents: 
+[16:09:29] INFO     [1.9317661525e-05, 2.24305585e-06, 2.867028675e-07]
+[16:10:30] INFO     Measurement triggered.
+[16:10:30] INFO     Measured DC currents: 
+[16:10:30] INFO     [1.92673874e-05, 2.2984452550000002e-06, 2.866834775e-07]
+[16:11:31] INFO     Measurement triggered.
+[16:11:31] INFO     Measured DC currents: 
+[16:11:31] INFO     [1.92454481e-05, 2.3763525475e-06, 2.86660325e-07]
+[16:12:32] INFO     Measurement triggered.
+[16:12:32] INFO     Measured DC currents: 
+[16:12:32] INFO     [1.9301649325000002e-05, 2.3514327400000002e-06, 2.867253125e-07]
+[16:13:32] INFO     Measurement triggered.
+[16:13:32] INFO     Measured DC currents: 
+[16:13:32] INFO     [1.941915155e-05, 2.299461365e-06, 2.8675405250000003e-07]
+[16:14:33] INFO     Measurement triggered.
+[16:14:33] INFO     Measured DC currents: 
+[16:14:33] INFO     [1.9669780725e-05, 2.28071317e-06, 2.8676051750000003e-07]
+[16:15:34] INFO     Measurement triggered.
+[16:15:34] INFO     Measured DC currents: 
+[16:15:34] INFO     [1.9586492775e-05, 2.2421123074999997e-06, 2.867324275e-07]
+[16:15:38] INFO     USER INPUT: exit
+[16:15:39] INFO     Scan will be aborted! Please wait until voltage is shut down and program has ended!
+[16:15:39] INFO     CH2 voltage will be shut down!
+[16:15:40] INFO     HUMIDITY CONTROL: Ending humidity stabilization program
+[16:15:40] INFO     CH2 voltage will be set to U2 = 0 V. Please wait a moment!
+[16:16:06] INFO     Long-Term Test Control has finished. Good bye!

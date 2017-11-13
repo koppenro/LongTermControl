@@ -1,0 +1,5 @@
+#Long Term Test - 2017_11_13 13:32:27
+#Scan parameters: DCVoltage=150V; Polarity=-; VoltageRange=auto; tbm=5; writeeachtrigger=1; maxtime=3.0
+#Scan list: [106, 107, 108]
+#Time after start(s)	Voltage(V)	30211132911720 - I(A)	30211132911715 - I(A)	30211132911708 - I(A)	
+35.560103	150.0	3.255863e-08	3.834974e-09	7.493053e-10

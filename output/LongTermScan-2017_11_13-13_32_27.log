@@ -1,0 +1,67 @@
+[13:32:27] INFO     Welcome to Long Term Test Control!
+[13:32:27] INFO     Log information will be saved in output/LongTermScan-2017_11_13-13_32_27.log
+[13:32:27] INFO     Found config file config/SingleChannelAnalysis101.cfg
+[13:32:27] INFO     Read in config file parameters
+[13:32:27] INFO     -------------------------------
+[13:32:27] INFO     [SerialPorts]
+[13:32:27] INFO     	keithley2700 = /dev/ttyUSB1
+[13:32:27] INFO     	isegt2dp = /dev/ttyUSB0
+[13:32:27] INFO     [Sensors]
+[13:32:27] INFO     	limleakcurr = 20000.0
+[13:32:27] INFO     	sensorlabel1 = Leer
+[13:32:27] INFO     	sensorlabel2 = Leer
+[13:32:27] INFO     	sensorlabel3 = Leer
+[13:32:27] INFO     	sensorlabel4 = Leer
+[13:32:27] INFO     	sensorlabel5 = Leer
+[13:32:27] INFO     	sensorlabel6 = 30211132911720
+[13:32:27] INFO     	sensorlabel7 = 30211132911715
+[13:32:27] INFO     	sensorlabel8 = 30211132911708
+[13:32:27] INFO     	sensorlabel9 = Leer
+[13:32:27] INFO     	sensorlabel10 = Unverbunden
+[13:32:27] INFO     [DCVoltageScan]
+[13:32:27] INFO     	voltchannel = 2
+[13:32:27] INFO     	dcvoltage = 150
+[13:32:27] INFO     	polarity = -
+[13:32:27] INFO     	scanchannels = 106:108
+[13:32:27] INFO     	voltagerange = auto
+[13:32:27] INFO     	tbm = 5
+[13:32:27] INFO     	writeeachtrigger = 1
+[13:32:27] INFO     	maxtime = 3.0
+[13:32:27] INFO     [IVCurves]
+[13:32:27] INFO     	enable = 0
+[13:32:27] INFO     	voltagesteps = 5
+[13:32:27] INFO     	scaneachtrigger = 5
+[13:32:27] INFO     [HumidityReadout]
+[13:32:27] INFO     	humlevel = 20
+[13:32:27] INFO     	mntpath = HumidityStabilization/
+[13:32:27] INFO     -------------------------------
+[13:32:27] INFO     Opening serial port to Keithley 2700
+[13:32:27] INFO     Serial port to Keithley 2700 opened
+[13:32:27] INFO     Opening serial port to Iseg T2DP
+[13:32:27] INFO     Serial port to Iseg T2DP opened
+[13:32:27] INFO     Security Demon succesfully started
+[13:32:28] INFO     Please check manually if the HV switch of CH2 is turned on at Iseg T2DP
+[13:32:28] INFO     Is the HV switch turned on? [Y]: 
+[13:32:29] INFO     USER INPUT: Y
+[13:32:29] WARNING  HUMIDITY CONTROL: Current humidity level is below desired value. However scan will be started and once the humidity level has reached desired value it will be stabilized.
+[13:32:29] INFO     Configuring Keithley 2700
+[13:32:29] INFO     Status of digital output channel (111:112): (1,1)
+[13:32:29] INFO     Binary status of digital output lines in channels @111: 11100000
+[13:32:29] INFO     Binary status of digital output lines in channels @112: 00000000
+[13:32:30] INFO     When triggered, scan will be measuring DC voltage with automatic range in 3 channels: @106,107,108
+[13:32:30] INFO     Configuring iseg T2DP
+[13:32:31] INFO     CH2 polarity will be set to P2 = - . Please wait a moment
+[13:32:35] INFO     Polarity setting of CH2 is P2 = -
+[13:32:37] INFO     CH2 voltage will be set to U2 = 150 V. Please wait a moment!
+[13:32:42] INFO     Current CH2 voltage is U2 = 147.9 V
+[13:32:42] INFO     HUMIDITY CONTROL: Starting humidity stabilization program
+[13:32:50] INFO     USER INPUT: exit
+[13:32:51] INFO     Scan will be aborted! Please wait until voltage is shut down and program has ended!
+[13:32:51] INFO     CH2 voltage will be shut down!
+[13:32:52] INFO     HUMIDITY CONTROL: Ending humidity stabilization program
+[13:32:53] INFO     CH2 voltage will be set to U2 = 0 V. Please wait a moment!
+[13:33:03] INFO     Measurement triggered.
+[13:33:03] INFO     Measured DC currents: 
+[13:33:03] INFO     [3.25586275e-08, 3.834974475e-09, 7.493053275e-10]
+[13:33:18] INFO     Current CH2 voltage is U2 = 0.0 V
+[13:33:18] INFO     Long-Term Test Control has finished. Good bye!
