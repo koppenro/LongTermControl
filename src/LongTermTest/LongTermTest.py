@@ -185,9 +185,7 @@ class LongTermTest():
       #Trigger scan
       self.scanTime = time.time()
       self.keithleyOccupiedTime()
-      print("VOR TRIGDCVOLTSCAN")
       self.measuredVoltages = (self.k.trigDCVoltScan(len(self.ScanChannelList), self.R))[0]
-      print("AFTER TRIGDCVOLTSCAN")
       self.KeithleyOccupied = False
       if write:
         #self.writeVoltagesToFile()
@@ -381,7 +379,6 @@ class LongTermTest():
             else:
               write = True
               counter = 1
-          print("VOR PERFORMONESCAN")
           self.performOneScan(write, iv)
         else:
           self.exitProgram()
@@ -445,7 +442,6 @@ class LongTermTest():
       if self.thread1.isAlive():
         self.exitPr = True
         sys.exit()
-        self.exitPr = True
       else:
         self.exitPr = True
         #print("SelfExit", self.exitPr)

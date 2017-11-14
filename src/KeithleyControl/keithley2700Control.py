@@ -303,11 +303,8 @@ class keithley2700:
     """
     
     R = 400 # R in kOhm
-    print("VOR BEFEHLSCHICKEN")
     self.port.write("READ?\r\n".encode())
-    print("NACH BEFEHLSCHICKEN")
     line = str(self.port.readline())
-    print("NACH ANTWORT LESEN")
     line = line[4:-1]
     #Pick out voltage values and convert to float
     splitted = line.split(',')
