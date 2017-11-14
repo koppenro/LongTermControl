@@ -303,8 +303,11 @@ class keithley2700:
     """
     
     R = 400 # R in kOhm
+    print("VOR BEFEHLSCHICKEN")
     self.port.write("READ?\r\n".encode())
+    print("NACH BEFEHLSCHICKEN")
     line = str(self.port.readline())
+    print("NACH ANTWORT LESEN")
     line = line[4:-1]
     #Pick out voltage values and convert to float
     splitted = line.split(',')
@@ -388,7 +391,7 @@ class keithley2700:
 if __name__=='__main__':
 
     # Instanciate Keithly
-    k = keithley2700("/dev/ttyUSB1")
+    k = keithley2700("COM3")
     
     k.init()
     #k.installPseudoCard()
@@ -398,12 +401,14 @@ if __name__=='__main__':
     #k.trigDCVoltScan(10)
     
     k.setDigitalIOChannel("111:114", True)
-    k.setDigitalOutputByte("111", "11000000")
-    k.setDigitalOutputByte("112", "00000001")
-    time.sleep(10)
+    k.setDigitalOutputByte("111", "00001000")
+    k.setDigitalOutputByte("112", "00000000")
+    input()
+    k.setDigitalOutputByte("111", "00000000")
     #k.setDigitalOutputByte("111", "00000000")
     
-    input()
+    #4
+    
     #time.sleep(2)
     #k.setDigitalOutputByte("212", "00000100")
     #time.sleep(2)

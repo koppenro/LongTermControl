@@ -36,22 +36,22 @@ class LongTermTestControl():
     #os.chdir(outputdirectory)
     self.l.init()
 
-    #Check if Security Demon is working in the background (works only for LINUX!!)
-    if platform.system() == "Windows":
-      logging.warning("Security Demon could not be started! The high voltage could not be ramped down in case of a unforseen crash of the program!")
-    else:
-      started = False
-      securitydemoncommand = "python3 src/SecurityDemon.py -k {0} -i {1} -c {2} &".format(self.l.SerialPortKeithley, self.l.SerialPortIseg, self.l.VoltChannel)
-      #print(securitydemoncommand)
-      os.system(securitydemoncommand)
-      for pid in psutil.pids():
-        p = psutil.Process(pid)
-        if "python" in p.name() and len(p.cmdline()) > 1 and "SecurityDemon.py" in p.cmdline()[1]:
-          logging.info("Security Demon succesfully started")
-          started = True
-      if not started:
-        logging.error("Couldn't start Security Demon. Please check the command '{0}' to start SecurityDemon.py".format(securitydemoncommand))
-        sys.exit()
+#    #Check if Security Demon is working in the background (works only for LINUX!!)
+#    if platform.system() == "Windows":
+#      logging.warning("Security Demon could not be started! The high voltage could not be ramped down in case of a unforseen crash of the program!")
+#    else:
+#      started = False
+#      securitydemoncommand = "python3 src/SecurityDemon.py -k {0} -i {1} -c {2} &".format(self.l.SerialPortKeithley, self.l.SerialPortIseg, self.l.VoltChannel)
+#      #print(securitydemoncommand)
+#      os.system(securitydemoncommand)
+#      for pid in psutil.pids():
+#        p = psutil.Process(pid)
+#        if "python" in p.name() and len(p.cmdline()) > 1 and "SecurityDemon.py" in p.cmdline()[1]:
+#          logging.info("Security Demon succesfully started")
+#          started = True
+#      if not started:
+#        logging.error("Couldn't start Security Demon. Please check the command '{0}' to start SecurityDemon.py".format(securitydemoncommand))
+#        sys.exit()
 
 
   def initLogger(self, logfile):

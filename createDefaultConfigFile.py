@@ -46,12 +46,12 @@ class createDefaultCfg:
     self.config.set('DCVoltageScan', '#writeeachtrigger: Rate of writing results into external file. "n" for saving results every n measurement', None)
     self.config.set('DCVoltageScan', '#maxtime: maximum time of scan after which program will end in hours', None)
     
-    self.config.add_section('IVCurves')
-    self.config.set('IVCurves', 'Enable', '0')
-    self.config.set('IVCurves', 'VoltageSteps', '5')
-    self.config.set('IVCurves', 'scaneachtrigger', '2')
-    self.config.set('IVCurves', '#Enable: Enable IV curve measurements during scan', None)
-    self.config.set('IVCurves', '#scaneachtrigger: rate for performing IV curve measurements. "n" for scanning each trigger event of DC voltage scan', None)
+    #self.config.add_section('IVCurves')
+    #self.config.set('IVCurves', 'Enable', '0')
+    #self.config.set('IVCurves', 'VoltageSteps', '5')
+    #self.config.set('IVCurves', 'scaneachtrigger', '2')
+    #self.config.set('IVCurves', '#Enable: Enable IV curve measurements during scan', None)
+    #self.config.set('IVCurves', '#scaneachtrigger: rate for performing IV curve measurements. "n" for scanning each trigger event of DC voltage scan', None)
     
     self.config.add_section('HumidityReadout')
     self.config.set('HumidityReadout', 'humlevel', '20')

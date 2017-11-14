@@ -185,7 +185,9 @@ class LongTermTest():
       #Trigger scan
       self.scanTime = time.time()
       self.keithleyOccupiedTime()
+      print("VOR TRIGDCVOLTSCAN")
       self.measuredVoltages = (self.k.trigDCVoltScan(len(self.ScanChannelList), self.R))[0]
+      print("AFTER TRIGDCVOLTSCAN")
       self.KeithleyOccupied = False
       if write:
         #self.writeVoltagesToFile()
@@ -354,42 +356,42 @@ class LongTermTest():
   
     
   def PerformVoltageScans(self, startTime, write=True):
+    testtime = time.time()
     counter = 1
     counterIV = 1
-    time.sleep(20)
-    self.performOneScan(write)
-    while (self.checkTime(startTime)):
-      if not self.exitPr:
+    if not self.checkExit(20):
+      self.performOneScan(write)
+      while (self.checkTime(startTime)):
         timetowait = self.calculateTbm()
-        self.checkExit(timetowait)
-        #inp = self.input_with_timeout("To plot type 'plot' before the next trigger signal. \nIf you wish to stop the scan, please type 'exit' before the next trigger signal. ", timetowait, None)
-        #if (inp == "exit"):
-        #  logging.info("USER INPUT: %s\t\t\t\t\t\t\t\t\t\t" %(inp))
-        #  self.exitProgram()
-        #elif (inp == None):
-        #  print("Continue triggering. ")
-        iv = False
-        if(self.IVEnable == 1):
-          if (int(counterIV) != int(self.IVSET)):
-            iv = False
-            counterIV +=1
-          else:
-            iv = True
-            counterIV = 1
-            counter = 1
-        write = False
-        if not iv:
-          if (int(counter) != int(self.wet)):
-            write = False
-            counter += 1
-          else:
-            write = True
-            counter = 1
-        self.performOneScan(write, iv)
-      else:
-        sys.exit()
-    logging.info("Maximum time of scan reached. ")
-    self.exitProgram()
+        if not self.checkExit(timetowait):
+          iv = False
+          if(self.IVEnable == 1):
+            if (int(counterIV) != int(self.IVSET)):
+              iv = False
+              counterIV +=1
+            else:
+              iv = True
+              counterIV = 1
+              counter = 1
+          write = False
+          if not iv:
+            if (int(counter) != int(self.wet)):
+              write = False
+              counter += 1
+            else:
+              write = True
+              counter = 1
+          print("VOR PERFORMONESCAN")
+          self.performOneScan(write, iv)
+        else:
+          self.exitProgram()
+          break
+      if not self.checkTime(startTime):
+        self.exitPr = True
+        logging.info("Maximum time of scan reached. ")
+        self.exitProgram()
+    else: 
+      self.exitProgram()
     return True 
   
   
@@ -416,16 +418,42 @@ class LongTermTest():
     self.thread1 = threading.Thread(target=self.PerformVoltageScans, args=(startTime, write))
     self.thread2 = threading.Thread(target=self.HumidityControl)
     self.thread3 = threading.Thread(target=self.waitForInput)
-    #self.thread4 = threading.Thread(target=self.monitorThread)
+    self.thread4 = threading.Thread(target=self.monitorThread)
     self.thread1.start()
     self.thread2.start()
     self.thread3.daemon = True  #program will exit if Thread3 is the last remaining thread
     self.thread3.start()
+    self.thread4.start()
     
-    #thread3.start()
-    #self.waitForInput()
     return True
     
+   
+  def monitorThread(self):
+    
+    while not self.exitPr:
+      if (not self.thread1.isAlive() and self.exitPr == False):
+        logging.error("Long Term Scan Thread seems to have ended unexpectedly!")
+        break
+      if (not self.thread2.isAlive() and self.exitPr == False):
+        logging.error("Humidity Control seems to have ended unexpectedly!")
+        break
+      if (not self.thread3.isAlive() and self.exitPr == False):
+        logging.error("Input thread seems to have ended unexpectedly!")
+        break
+    if not self.exitPr:
+      logging.warning("One of the features of the program doesn't work properly!")
+      if self.thread1.isAlive():
+        self.exitPr = True
+        sys.exit()
+        self.exitPr = True
+      else:
+        self.exitPr = True
+        #print("SelfExit", self.exitPr)
+        self.i.VoltageShutdown(self.VoltChannel)
+        self.k.close()
+        logging.info("Voltage is shut down and Keithley is reset. However there occured an unexpected end of the program!")
+        logging.warning("Please check the error messages above before starting another scan!")
+        #sys.exit()
     
   
   def analyseCfgScanChannels(self):
@@ -771,8 +799,8 @@ class LongTermTest():
       if inp == "exit":
         logging.info("USER INPUT: {0}".format(inp))
         self.exitPr = True
-        time.sleep(1)
-        self.exitProgram()
+        #time.sleep(1)
+        #self.exitProgram()
       elif inp == "plot":
         #print("Plot")
         os.system("python src/plot_LongTermTest.py {0}/{1} {2} {3} &".format(self.outputdirectory, self.DataFileName, self.InitNrScanChan, 0.001*self.limleakcurr))
@@ -783,23 +811,25 @@ class LongTermTest():
     t = 0
     while t < timetowait:
       if self.exitPr:
-        sys.exit()
+        return True
+        #sys.exit()
       t += 1
       time.sleep(1)
+    return False
       
-  def IVScan(self):
-    logging.info("Preparing IV-curve measurement")
-    self.i.setVoltage(self.VoltChannel, 0, 10)
-    self.currentVoltage = 0
-    curVol = 0
-    while(curVol + self.IVVoltSteps < self.DCVoltage):
-      curVol = curVol + self.IVVoltSteps
-      self.i.setVoltage(self.VoltChannel, curVol, 1)
-      self.currentVoltage = curVol
-      self.keithleyOccupiedTime()
-      self.performOneScan(True)
-      self.KeithleyOccupied = False
-    logging.info("IV-curve measurement ended")
+#  def IVScan(self):
+#    logging.info("Preparing IV-curve measurement")
+#    self.i.setVoltage(self.VoltChannel, 0, 10)
+#    self.currentVoltage = 0
+#    curVol = 0
+#    while(curVol + self.IVVoltSteps < self.DCVoltage):
+#      curVol = curVol + self.IVVoltSteps
+#      self.i.setVoltage(self.VoltChannel, curVol, 1)
+#      self.currentVoltage = curVol
+#      self.keithleyOccupiedTime()
+#      self.performOneScan(True)
+#      self.KeithleyOccupied = False
+#    logging.info("IV-curve measurement ended")
 
 # main loop
 if __name__=='__main__':
