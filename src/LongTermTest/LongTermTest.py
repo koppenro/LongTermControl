@@ -15,17 +15,20 @@ from IsegControl import isegT2DP
 import platform
 if platform.system() == "Windows":
     import msvcrt
-    
-#ImportCreateDefaultCfg = imp.load_source('createDefaultCfg', 'createDefaultConfigFile.py')  #Import module to create default config file
 
 class LongTermTest():
   
   def __init__(self, pathtocfg, outputdirectory, workDIR):
+  
+    """Read in parameter from config file and initialize class variables
     
-    #self.initLogger("output/Test.log")
+      Args:
+        * str pathtocfg: path to config file
+        * str outputdirectory: path to output directory
+        * str workDIR: working directory (directory where program was started)
+    """
     
     self._is_running = True
-    
     #Read settings from config file
     self.config = configparser.ConfigParser()
     self.config.read(pathtocfg)
@@ -81,13 +84,13 @@ class LongTermTest():
     self.maxtime = float(self.config['DCVoltageScan']['maxtime'])
     logging.info("\tmaxtime = {0}".format(self.maxtime))
     
-    logging.info("[IVCurves]")
-    self.IVEnable = int(self.config['IVCurves']['enable'])
-    logging.info("\tenable = {0}".format(self.IVEnable))
-    self.IVVoltSteps = int(self.config['IVCurves']['voltagesteps'])
-    logging.info("\tvoltagesteps = {0}".format(self.IVVoltSteps))
-    self.IVSET = int(self.config['IVCurves']['scaneachtrigger'])
-    logging.info("\tscaneachtrigger = {0}".format(self.IVSET))
+    #logging.info("[IVCurves]")
+    #self.IVEnable = int(self.config['IVCurves']['enable'])
+    #logging.info("\tenable = {0}".format(self.IVEnable))
+    #self.IVVoltSteps = int(self.config['IVCurves']['voltagesteps'])
+    #logging.info("\tvoltagesteps = {0}".format(self.IVVoltSteps))
+    #self.IVSET = int(self.config['IVCurves']['scaneachtrigger'])
+    #logging.info("\tscaneachtrigger = {0}".format(self.IVSET))
     
     logging.info("[HumidityReadout]")
     self.humLevel = int(self.config['HumidityReadout']['humlevel'])
@@ -139,6 +142,12 @@ class LongTermTest():
 
 
   def init(self):
+  
+    """initialize connections to Keithley 2700 and Iseg T2DP
+    
+      Returns: 
+        * True if everything worked fine
+    """
     
     #self.initLogger(self.LogFileName)
     #Open instance of Keithley Control
@@ -152,6 +161,13 @@ class LongTermTest():
     
   
   def keithleyOccupiedTime(self):
+  
+    """check if class variable KeithleyOccupied is true (= an instance of the program is currently writing information in the serial port) 
+       and set the variable to true as soon as it is possible
+
+       Returns: 
+        * True
+    """
     while self.KeithleyOccupied:
       time.sleep(0.5)
     self.KeithleyOccupied = True
@@ -159,6 +175,15 @@ class LongTermTest():
   
   
   def initDCVoltScan(self):
+    
+    """configure DC voltage scan on Keithley 2700 (with 7707 Multiplexer card!)
+       Scan channels read from config file will be analyzed and digital output channels of multiplexer card will be prepared. 
+       Scan will be initialized with voltage range read from config file (needs only triggering afterwards to start one measurement). 
+       DC polarity and voltage will be set at Iseg T2DP. 
+    
+      Returns: 
+        * True if everything worked fine
+    """
     
     #Configure Keithley 2700
     self.keithleyOccupiedTime()
@@ -178,9 +203,13 @@ class LongTermTest():
   
   
   def performOneScan(self, write=True, iv=False):
+    """trigger one single scan (after initializing the DC voltage scan with initDCVoltScan())
+       Measured values will be saved as configured in the config file
+       IV scan not yet implemented!
+    """
     
     if iv:
-      print("IV")
+      print("IV test ist not yet implemented.")
     else:
       #Trigger scan
       self.scanTime = time.time()
@@ -202,6 +231,12 @@ class LongTermTest():
 
     
   def writeVoltagesToFile(self):
+    """write voltages measured after one DC voltage trigger event scan into the output file
+       File format can be defined in the config file (.txt with tab separation or .csv).
+      
+      Returns: 
+        * True if everything worked fine
+    """
     
     os.chdir(self.outputdirectory)
     #Create Data File if not existant with header lines
@@ -251,6 +286,13 @@ class LongTermTest():
     
     
   def writeCurrentsToFile(self):
+    """write currents calculated from the measured voltages after one DC voltage scan trigger event into the output file (Resistance value is hardcoded to 400kOhm as a class variable (R)!!!)
+       File format can be defined in the config file (.txt with tab separation or .csv).
+      
+      Returns: 
+        * True if everything worked fine
+    """
+  
     os.chdir(self.outputdirectory)
     
     #Create CSV File if not existant with header lines
@@ -280,7 +322,7 @@ class LongTermTest():
     for ch in self.ScanChannelList:
       index = self.InitScanChannelList.index(ch)
       if counter1 < len(self.measuredVoltages):
-        saveList[index+2] = (abs(float(self.measuredVoltages[counter1])/(400*1000.)))
+        saveList[index+2] = (abs(float(self.measuredVoltages[counter1])/(self.R*1000.)))
         counter1 += 1
             
     file = open(self.DataFileName, 'a')
@@ -311,6 +353,12 @@ class LongTermTest():
     
     
   def checkLeakageCurrent(self):
+    """check the measured voltages after one trigger event and compare them to the defined threshold current
+      
+      Returns: 
+        * True if at least one sensor exceeded the current threshold 
+        * False if currents in all sensors are below threshold
+    """
     
     somethingToDo = False
     for zaehler in range(0,len(self.measuredVoltages)):
@@ -323,6 +371,12 @@ class LongTermTest():
     
   
   def removeChannelsFromScan(self):
+    """shut down the DC voltage to open the switches of each sensor which leakage current exceeded the current threshold
+       Channel will be removed from Scan Channel List at Iseg and Iseg will be reinitialized to wait for the next trigger signal
+      
+      Returns: 
+        * True if everything worked fine
+    """
     
     #Voltage shutdown needed!
     self.i.VoltageShutdown(self.VoltChannel)
@@ -354,7 +408,16 @@ class LongTermTest():
   
     
   def PerformVoltageScans(self, startTime, write=True):
-    testtime = time.time()
+    """coordinate DC voltage scans (triggering events) and when to save data output
+      
+      Args:
+        * startTime: time of initializing the first DC voltage scan (formatted as the output of time.time())
+        * write: boolean to set if data output will be written to output file
+      
+      Returns: 
+        * True if everything worked fine
+    """
+    
     counter = 1
     counterIV = 1
     if not self.checkExit(20):
@@ -393,6 +456,16 @@ class LongTermTest():
   
   
   def LongTerm(self):
+    """main function of the class LongTermTest
+       Check if voltage is at zero before starting, wait until desired humidity level is reached, initialize first scan and open four threads to control the system. 
+       thread1: PerformVoltageScans() to coordinate the trigger events during the Long Term Scan. 
+       thread2: Humiditycontrol() to control the level of humidity inside the test box and change status of the valve
+       thread3: waitForInput() to interact with the user
+       thread4: monitorThread() to control the correct working of the other 3 threads and end program in safe way if something goes unexpectedly (voltage ramp down!)
+      
+      Returns: 
+        * True if everything worked fine
+    """
   
     self.checkVoltageatStart()
       
@@ -426,6 +499,8 @@ class LongTermTest():
     
    
   def monitorThread(self):
+    """monitor the 3 other threads defined in LongTerm() to ensure that in case of an unexpected failure of one of the threads, the experiment will be safely shut down!
+    """
     
     while not self.exitPr:
       if (not self.thread1.isAlive() and self.exitPr == False):
@@ -449,11 +524,13 @@ class LongTermTest():
         self.k.close()
         logging.info("Voltage is shut down and Keithley is reset. However there occured an unexpected end of the program!")
         logging.warning("Please check the error messages above before starting another scan!")
-        #sys.exit()
     
   
   def analyseCfgScanChannels(self):
     """Analyse scan channels given in config file and copy them into two correctly formated lists to continue in the program
+    
+      Returns: 
+        * True if everything worked fine
     """
     
     self.ScanChannelList = []
@@ -528,6 +605,11 @@ class LongTermTest():
     
    
   def defDigitalOutputChannels(self):
+    """define initial state of digital output channels corresponding to the analog channels to be measured in the config file
+       
+      Returns: 
+        * Array with name and byte information of digital output channels
+    """
     
     if (int(self.ScanChannelList[0]/100) == 1):
       self.DigChannelsWithOutputByte[0][0] = 111
@@ -567,7 +649,14 @@ class LongTermTest():
         
     return(self.DigChannelsWithOutputByte)
   
+  
   def updateDigOutChan(self, channeltoopen):
+    """update digital output channels if leakage current of a sensor is higher than the threshold and its switch has to be closed
+       
+      Returns: 
+        * True if everything worked fine
+    """
+    
     if (channeltoopen == 101 or channeltoopen == 201):
       self.DigChannelsWithOutputByte[0][1] = 0
     if (channeltoopen == 102 or channeltoopen == 202):
@@ -593,6 +682,8 @@ class LongTermTest():
     
   
   def initLogger(self, logfile):
+    """init logger for an output into the shell and the .log file
+    """
     # set up logging to file 
     logging.basicConfig(level=logging.DEBUG,
                         format='[%(asctime)s] %(levelname)-8s %(message)s',
@@ -611,70 +702,27 @@ class LongTermTest():
     logging.getLogger('').addHandler(console)
 
 
-  def input_with_timeout_sane(self, prompt, timeout, default):
-      """Read an input from the user or timeout"""
-      start_time = time.time()
-      print(prompt,)
-      sys.stdout.flush()
-      rlist, _, _ = select([sys.stdin], [], [], timeout)
-      while rlist:
-          end_time = time.time()
-          time_difference = end_time - start_time
-          s = sys.stdin.readline().replace('\n','')
-          if(s == "plot"):
-            print("KITPlot will be called forked, scan will continue.")
-            os.system("python3 src/plot_LongTermTest.py output/{0} {1} {2} &".format(self.DataFileName, self.InitNrScanChan, 0.001*self.limleakcurr))
-            rlist, _, _ = select([sys.stdin], [], [], timeout - time_difference)
-          elif(s != "exit"):
-            print("Please type 'plot' to open KITPlot, 'exit' to quit the program or nothing to continue!")
-            rlist, _, _ = select([sys.stdin], [], [], timeout - time_difference)
-          else: 
-            break
-      else:
-          s = default
-          #print(s)
-      return s
-
-  def input_with_timeout_windows(self, prompt, timeout, default): 
-      start_time = time.time()
-      print(prompt,)
-      sys.stdout.flush()
-      input = ''
-      while True:
-          if msvcrt.kbhit():
-              chr = msvcrt.getche()
-              if ord(chr) == 13: # enter_key
-                  print(input)
-                  print("Input accepted. Please wait a little moment until it will be progressed. ")
-                  time.sleep(timeout - (time.time()-start_time))
-                  break
-              elif ord(chr) >= 32: #space_char
-                  input += chr.decode()
-          if len(input) == 0 and (time.time() - start_time) > timeout:
-              break
-      if len(input) > 0:
-          if(input == "plot"):
-            print("Plot program will be called forked, scan will continue.")
-            os.system("python ../plot_LongTermTest.py data/{0} {1} {2} &".format(self.DataFileName, self.InitNrScanChan, 0.001*self.limleakcurr))  
-          print("Input ", input)
-          return input
-      else:
-          return default
-
-  def input_with_timeout(self, prompt, timeout, default=''):
-      if platform.system() == "Windows":
-          return self.input_with_timeout_windows(prompt, timeout, default)
-      else:
-          return self.input_with_timeout_sane(prompt, timeout, default)
-
-
   def checkTime(self, TimeStart):
+    """check if maximum time of the Long Term scan is already reached
+      
+      Args:
+        * TimeStart: start time of the Long Term scan
+        
+      Returns: 
+        * True if scan can be continued
+        * False if maximum scan time is reached
+    """
     if time.time() > TimeStart + self.maxtime*3600:
       return False
     return True
     
   
   def calculateTbm(self):
+    """calculate time to wait for the next trigger event
+       
+      Returns: 
+        * int tbm: time to wait for the next trigger event in seconds
+    """
     if self.tbm > 60:
       if time.time() > self.scanTime + self.tbm:
         return 0
@@ -683,6 +731,8 @@ class LongTermTest():
 
   
   def exitProgram(self):
+    """abort scan, shut down voltage and close serial ports to exit program
+    """
     self.exitPr = True
     logging.info("Scan will be aborted! Please wait until voltage is shut down and program has ended!")
     self.i.VoltageShutdown(self.VoltChannel)
@@ -690,10 +740,11 @@ class LongTermTest():
     self.keithleyOccupiedTime()
     self.k.close()
     self.KeithleyOccupied = False
-    #sys.exit()
     
   
   def checkVoltageatStart(self):
+    """check DC voltage of Iseg T2DP before starting the scan and set it to zero if non zero
+    """
     self.i.communicative = False
     if (self.i.getVoltage(self.VoltChannel) != 0):
       logging.warning("Voltage at Iseg was measured to be non zero before starting any scan! Please wait a moment until voltage will reach 0V and program will continue!")
@@ -705,6 +756,8 @@ class LongTermTest():
     
   # HUMIDITY CONTROL
   def HumidityControl(self):
+    """measure humidity level each 2 seconds and set digital output byte to control valve status
+    """
     
     logging.info("HUMIDITY CONTROL: Starting humidity stabilization program")
     startTime = time.time()
@@ -746,14 +799,27 @@ class LongTermTest():
     file.close()
     logging.info("HUMIDITY CONTROL: Ending humidity stabilization program")
     return True
-    
+  
+  
   def readHum(self):
+    """read humidity level from file stated in the config file
+       
+      Returns: 
+        * float humidity: humidity level 
+    """
     f = open("{0}/humidity".format(self.humMntPath))
     humidity = float(f.readline())
     f.close()
     return humidity
-    
+  
+  
   def firstReachHumLevel(self):
+    """wait for humidity level to reach desired value before starting the first voltage measurement
+       Will only wait if humidity level is higher than the desired value. If lower the scan will start immediately, but humidity will be stabilized as soon as the desired level is reached.
+       
+      Returns: 
+        * True if everything worked fine
+    """
     self.analyseCfgScanChannels()
     currentLevel = self.readHum()
     if (currentLevel - self.humLevel) < -1:
@@ -787,8 +853,12 @@ class LongTermTest():
     self.ValveCurrentlyOpen = False
     
     return True
-    
+  
+  
   def waitForInput(self):
+    """wait for input from the user
+       Possible inputs are "exit" to exit the program in a safe way and "plot" to show the measured data of the current scan
+    """
     print("To plot the leakage current distribution over time type 'plot'. To quit the scan please type 'exit'.")
     while not self.exitPr:
       inp = input()
@@ -803,7 +873,18 @@ class LongTermTest():
       else:
         print("To plot the leakage current distribution over time type 'plot'. To quit the scan please type 'exit'.")  
   
+  
   def checkExit(self, timetowait):
+    """check every second if the class variable 'exitPr' is set until a maximum time 'timetowait' is reached
+       
+      Args:
+        * timetowait: time to wait until method will end
+        
+      Returns: 
+        * True if class variable 'exitPr' was set to True during the methods runtime
+        * False if class variable 'exitPr' is False
+        
+    """
     t = 0
     while t < timetowait:
       if self.exitPr:

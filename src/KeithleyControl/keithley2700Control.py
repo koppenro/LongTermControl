@@ -25,8 +25,6 @@ class keithley2700:
       Returns: 
         * True if everything worked fine
         
-        
-      TODO: FALLS KEITHLEY NICHT ANTWORTET WEIL PORT NICHT RICHTIG ZEITABSCHALTUNG MIT FEHLERMELDUNG HINZUFUEGEN
     """
     
     try:

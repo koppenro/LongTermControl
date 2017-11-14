@@ -22,6 +22,15 @@ class LongTermTestControl():
 
 
   def init(self, outputdirectory, pathtocfg):
+  
+    """initialize Long Term control software
+    
+      Args:
+        * str outputdirectory: path to outputdirectory where .log and .txt files will be saved
+        * str pathtocfg: path to config file
+        
+    """
+  
     #initialize everything
     workDIR = os.getcwd()
     if workDIR.endswith('\src') or workDIR.endswith('/src'):
@@ -41,25 +50,18 @@ class LongTermTestControl():
     #os.chdir(outputdirectory)
     self.l.init()
 
-#    #Check if Security Demon is working in the background (works only for LINUX!!)
-#    if platform.system() == "Windows":
-#      logging.warning("Security Demon could not be started! The high voltage could not be ramped down in case of a unforseen crash of the program!")
-#    else:
-#      started = False
-#      securitydemoncommand = "python3 src/SecurityDemon.py -k {0} -i {1} -c {2} &".format(self.l.SerialPortKeithley, self.l.SerialPortIseg, self.l.VoltChannel)
-#      #print(securitydemoncommand)
-#      os.system(securitydemoncommand)
-#      for pid in psutil.pids():
-#        p = psutil.Process(pid)
-#        if "python" in p.name() and len(p.cmdline()) > 1 and "SecurityDemon.py" in p.cmdline()[1]:
-#          logging.info("Security Demon succesfully started")
-#          started = True
-#      if not started:
-#        logging.error("Couldn't start Security Demon. Please check the command '{0}' to start SecurityDemon.py".format(securitydemoncommand))
-#        sys.exit()
-
 
   def initLogger(self, logfile):
+  
+    """initialize logger
+    
+      Args:
+        * str logfile: name of output log file
+        
+      Logger will create a log file and save the output printed in the shell into it. 
+      It is formatted as "[$(time)] $(levelname) $(message)". 
+    """
+    
     # set up logging to file
     logging.basicConfig(level=logging.DEBUG,
                         format='[%(asctime)s] %(levelname)-8s %(message)s',
@@ -81,6 +83,16 @@ class LongTermTestControl():
 
 
   def checkCfgFile(self, PathToConfigFile):
+    
+    """check if config file exists
+    
+      Args:
+        * str PathToConfigFile
+        
+      Raises:
+        * FileNotFoundError if path doesn't exist!
+    """
+  
     #Check if config file exists
 
     if not exists(PathToConfigFile):
@@ -91,13 +103,11 @@ class LongTermTestControl():
 
 
   def start(self):
-
-    #t1 = threading.Thread(target=self.l.LongTerm())
-    #t2 = threading.Thread(target=self.test())
-    #t1.start()
-    #t2.start()
-
-
+    
+    """start Long Term Software
+    
+    """
+    
     self.l.LongTerm()
 
 
@@ -117,8 +127,6 @@ if __name__=='__main__':
   outputdirectory = options.outputdirectory
   pathtocfg = options.pathtocfg
 
-  #DEBUG!!!
-  #pathtocfg = "LongTermTestControl.cfg"
   lc = LongTermTestControl()
   lc.init(outputdirectory, pathtocfg)
   lc.start()
