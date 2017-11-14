@@ -16,7 +16,7 @@ import platform
 if platform.system() == "Windows":
     import msvcrt
     
-ImportCreateDefaultCfg = imp.load_source('createDefaultCfg', 'createDefaultConfigFile.py')  #Import module to create default config file
+#ImportCreateDefaultCfg = imp.load_source('createDefaultCfg', 'createDefaultConfigFile.py')  #Import module to create default config file
 
 class LongTermTest():
   

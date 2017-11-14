@@ -2,6 +2,7 @@
 
 import sys
 import os
+from os.path import exists
 import logging
 from pathlib import Path
 from optparse import OptionParser
@@ -23,6 +24,10 @@ class LongTermTestControl():
   def init(self, outputdirectory, pathtocfg):
     #initialize everything
     workDIR = os.getcwd()
+    if workDIR.endswith('\src') or workDIR.endswith('/src'):
+      print("ENDS")
+      os.chdir("..")
+      workDIR = os.getcwd()
     try:
       os.chdir(outputdirectory) #change to output directory
     except FileNotFoundError:
@@ -78,12 +83,10 @@ class LongTermTestControl():
   def checkCfgFile(self, PathToConfigFile):
     #Check if config file exists
 
-    cfgFile = Path(PathToConfigFile)
-    try:
-      absPath = cfgFile.resolve()
-    except FileNotFoundError:
+    if not exists(PathToConfigFile):
       logging.error("Cfg file couldn't be found! Please check if the path {0} is correct.".format(PathToConfigFile))
       logging.info("You can create a default config file with 'createDefaultConfigFile.py'")
+      raise FileNotFoundError
     logging.info("Found config file {0}".format(PathToConfigFile))
 
 
