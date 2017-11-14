@@ -50,7 +50,8 @@ class keithley2700:
 	
 		# Custom settings
     # Reset Keithley
-    self.port.write("*RST\r\n".encode())
+    #self.port.write("*RST\r\n".encode())
+    self.port.write("*RCL 0\r\n".encode())  #restore user saved setup (all digital output channels at '0')
     # Disable hardware beeper
     self.port.write(":SYST:BEEP OFF\r\n".encode())
     self.printout("Serial port to Keithley 2700 opened", "info")
@@ -327,9 +328,10 @@ class keithley2700:
     #Clear all error messages
     self.port.write("*CLS\r\n".encode())
     #Reset Keithley
-    self.port.write("*RST\r\n".encode())
+    #self.port.write("*RST\r\n".encode())
+    self.port.write("*RCL 0\r\n".encode())  #restore user saved setup (all digital output channels at '0')
     #Load Presettings 
-    self.port.write("STAT:PRES\r\n".encode())
+    #self.port.write("STAT:PRES\r\n".encode())
     #Init custom settings
     self.port.write(":SYST:BEEP OFF\r\n".encode())
   
@@ -339,19 +341,19 @@ class keithley2700:
     """
     
     #Reset Keithley
-    self.port.write("*RST\r\n".encode())
+    #self.port.write("*RST\r\n".encode())
+    self.port.write("*RCL 0\r\n".encode())  #restore user saved setup (all digital output channels at '0')
     #Clear all error messages
     self.port.write("*CLS\r\n".encode())
     #Load Presettings 
-    self.port.write("STAT:PRES\r\n".encode())
+    #self.port.write("STAT:PRES\r\n".encode())
     # Set "LOCAL" mode
     self.port.write(":SYST:KEY 17\r\n".encode())
     #Close connection
     self.port.close()
 
-#TODO: Loesche Funktion nach Debuggen!!!    
-  def installPseudoCard(self):
-    self.port.write("SYST:PCAR2 C7707\r\n".encode())
+#  def installPseudoCard(self):
+#    self.port.write("SYST:PCAR2 C7707\r\n".encode())
   
     
   def isFloat(self, string):
@@ -387,49 +389,9 @@ class keithley2700:
 # main loop
 if __name__=='__main__':
 
-    # Instanciate Keithly
+    # Instanciate Keithley
     k = keithley2700("COM3")
     
     k.init()
-    #k.installPseudoCard()
-    #k.setRange("DCV", "auto")
-    
-    # k.initDCVoltScan(10, "101:110", "auto")
-    #k.trigDCVoltScan(10)
-    
-    k.setDigitalIOChannel("111:114", True)
-    k.setDigitalOutputByte("111", "00001000")
-    k.setDigitalOutputByte("112", "00000000")
-    input()
-    k.setDigitalOutputByte("111", "00000000")
-    #k.setDigitalOutputByte("111", "00000000")
-    
-    #4
-    
-    #time.sleep(2)
-    #k.setDigitalOutputByte("212", "00000100")
-    #time.sleep(2)
-    #k.setDigitalOutputByte("212", "00000000")
-    #print("test2")
-    #k.setDigitalOutputByte("211", "00000010")
-    #print("test2")
-    
-    #k.setDigitalIOChannel("111:114", True)
-    #time.sleep(3)
-    #k.setDigitalIOChannel("111:114", True)
-    #k.setDigitalOutputByte("112", "00000000")
-#    k.setDigitalOutputByte("112", "00001101")
-#    k.initiateDCVoltageScan(9, "201:209", VolRange=10)
-#    k.triggerDCVoltageScan(9)
-#    time.sleep(5)
-#    k.triggerDCVoltageScan(9)
-#    time.sleep(5)
-#    k.triggerDCVoltageScan(9)
-#    time.sleep(5)
-#    k.triggerDCVoltageScan(9)
-#    time.sleep(5)
-#    k.triggerDCVoltageScan(9)
-#    k.reset()
-
     
   
