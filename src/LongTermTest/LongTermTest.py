@@ -765,9 +765,12 @@ class LongTermTest():
     counter = 0
     while not self.exitPr:
       hum = self.readHum()
+      temp = self.readTemp()
       file.write("%2.1f" %(time.time()-startTime))
       file.write("\t")
       file.write(str(hum))
+      file.write("\t")
+      file.write(str(temp))
       file.write("\n")
       if hum > self.humLevel + 1:
         self.DigChannelsWithOutputByte[1][3] = 1
@@ -811,6 +814,17 @@ class LongTermTest():
     humidity = float(f.readline())
     f.close()
     return humidity
+
+  def readTemp(self):
+    """read temperature from file stated in the config file
+
+      Returns:
+        * float temperature: temperature
+    """
+    f = open("{0}/temperature".format(self.humMntPath))
+    temperature = float(f.readline())
+    f.close()
+    return temperature
 
 
   def firstReachHumLevel(self):
