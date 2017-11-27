@@ -393,8 +393,9 @@ if __name__=='__main__':
     k.init()
 
     k.setDigitalIOChannel("111:114", True)
+    #k.setDigitalOutputByte("111","11111111")
     k.setDigitalOutputByte("111","11111111")
-    k.setDigitalOutputByte("112","11111111")
+    k.setDigitalOutputByte("112","00000011")
     input()
     k.setDigitalOutputByte("111","00000000")
     k.setDigitalOutputByte("112","00000000")

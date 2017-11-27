@@ -506,9 +506,9 @@ class LongTermTest():
       if (not self.thread1.isAlive() and self.exitPr == False):
         logging.error("Long Term Scan Thread seems to have ended unexpectedly!")
         break
-      if (not self.thread2.isAlive() and self.exitPr == False):
-        logging.error("Humidity Control seems to have ended unexpectedly!")
-        break
+    #  if (not self.thread2.isAlive() and self.exitPr == False):
+    #    logging.error("Humidity Control seems to have ended unexpectedly!")
+    #    break
       if (not self.thread3.isAlive() and self.exitPr == False):
         logging.error("Input thread seems to have ended unexpectedly!")
         break
