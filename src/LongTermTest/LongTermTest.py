@@ -407,10 +407,11 @@ class LongTermTest():
     return True
 
 
-  def PerformVoltageScans(self, write=True):
+  def PerformVoltageScans(self, startTime write=True):
     """coordinate DC voltage scans (triggering events) and when to save data output
 
       Args:
+        * starTime: iterable variable needed for Threading 
         * write: boolean to set if data output will be written to output file
 
       Returns:
@@ -479,13 +480,13 @@ class LongTermTest():
     self.firstReachHumLevel() #wait until humidity level is reached
 
     self.referenceTime = time.time()    #Time of initializing the DC Voltage scan for the first time and reference time for the whole measurement!
-    #startTime = time.time()
+    startTime = time.time()
     write = True
     self.initDCVoltScan()
     self.InitNrScanChan = self.NrScannedChannels
     self.InitScanChannelList = self.ScanChannelList[:]
 
-    self.thread1 = threading.Thread(target=self.PerformVoltageScans, args=(write))
+    self.thread1 = threading.Thread(target=self.PerformVoltageScans, args=(startTime, write))
     self.thread2 = threading.Thread(target=self.HumidityControl)
     self.thread3 = threading.Thread(target=self.waitForInput)
     self.thread4 = threading.Thread(target=self.monitorThread)
