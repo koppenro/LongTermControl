@@ -407,11 +407,11 @@ class LongTermTest():
     return True
 
 
-  def PerformVoltageScans(self, startTime write=True):
+  def PerformVoltageScans(self, startTime, write=True):
     """coordinate DC voltage scans (triggering events) and when to save data output
 
       Args:
-        * starTime: iterable variable needed for Threading 
+        * starTime: iterable variable needed for Threading
         * write: boolean to set if data output will be written to output file
 
       Returns:
