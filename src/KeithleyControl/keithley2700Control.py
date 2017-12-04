@@ -388,7 +388,7 @@ class keithley2700:
 if __name__=='__main__':
 
     # Instanciate Keithley
-    k = keithley2700("COM4")
+    k = keithley2700("/dev/ttyUSB0")
 
     k.init()
 

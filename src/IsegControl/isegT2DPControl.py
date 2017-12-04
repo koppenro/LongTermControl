@@ -260,8 +260,7 @@ class isegT2DP:
     
 # main loop
 if __name__=='__main__':
-
-  i = isegT2DP("/dev/ttyUSB0")
+  i = isegT2DP("/dev/ttyUSB1")
   i.init()
   i.getIDN(2)
   #i.test(30)
