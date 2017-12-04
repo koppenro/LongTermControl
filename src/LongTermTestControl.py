@@ -6,7 +6,6 @@ from os.path import exists
 import logging
 from pathlib import Path
 from optparse import OptionParser
-import psutil
 import time
 import threading
 
