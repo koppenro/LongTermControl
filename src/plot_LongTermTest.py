@@ -22,9 +22,10 @@ if len(sys.argv) == 4:
     #x_name = f.readline().replace('\r\n','')# Liest vierte Zeile, speichert x-Achsenbeschriftung
     f.readline()
     f.readline()
+    f.readline()
     #y_name = f.readline().replace('\r\n','')
     #f.readline()
-    
+
     #time, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10 = [],[],[],[],[],[],[],[],[],[],[]  # Definiert leere arrays
     time = []
     s = [[],[],[],[],[],[],[],[],[],[]]
@@ -45,9 +46,9 @@ if len(sys.argv) == 4:
         #s9.append( float(line.split()[9].replace(',','.')) )
         #s10.append( float(line.split()[10].replace(',','.')) )
       limleakcurr.append(float(sys.argv[3]))
-  
+
   f.close()
-  
+
   # Plotten
   plt.figure(figsize=(15,10))
   #plt.errorbar(x_value, y_value, xerr=x_error, yerr=y_error, linestyle='None', marker='o', color='black', markersize=5, label='Messwerte')
@@ -71,7 +72,7 @@ if len(sys.argv) == 4:
 #  plt.plot(time, s9, color='olive', label='s9')
 #  plt.plot(time, s10, color='cyan', label='s10')
   plt.legend(loc='best')
-  #plt.title(title, size=20) 
+  #plt.title(title, size=20)
   plt.xlabel("Time after scan start (s)", size=15)
   plt.ylabel("Leakage current ({0}A)".format("u"), size=15)
   plt.grid(True)
@@ -79,14 +80,14 @@ if len(sys.argv) == 4:
   #plt.savefig('{}.pdf'.format(sys.argv[1][:-4]), dpi=1600)
   plt.show()
   #input()
-  
+
   #os.system("evince --class=test {}.pdf".format(sys.argv[1][:-4]))
-  
-  
+
+
 #  plt.close()
 
 else:
   print("Erstes Argument: Pfad zu Textdatei")
   print("Zweites Argument: Anzahl an Scan Channels")
-  print("Drittes Argument: Grenze des Leckstroms in uA") 
+  print("Drittes Argument: Grenze des Leckstroms in uA")
   #print("Falsche Benutzung!")

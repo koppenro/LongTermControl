@@ -8,6 +8,8 @@ import os
 import logging
 from select import select
 import threading
+from pathlib import Path
+from datetime import datetime
 
 from KeithleyControl import keithley2700
 from IsegControl import isegT2DP
@@ -102,7 +104,7 @@ class LongTermTest():
     self.DataFileExist = False;
     self.DataFileFormat = "txt" #'txt' (separation by tabs) or 'csv' (separation by commas) available
     self.characTime = time.localtime()
-    self.referenceTime = 0  #Value will be overwritten before first comparison!
+    self.diffTime = time.time()
     self.DataFileName = "LongTermScan-%s.%s" %(time.strftime("%Y_%m_%d-%H_%M_%S", self.characTime), self.DataFileFormat)
     self.LogFileName = "data/LongTermScan-%s.log" %(time.strftime("%Y_%m_%d-%H_%M_%S", self.characTime))
 
@@ -135,10 +137,10 @@ class LongTermTest():
       logging.info("Program will end!")
       sys.exit()
 
-    #if self.IVEnable == 1 and self.IVVoltSteps > self.DCVoltage:
-    #  logging.error("IV curve measurements are enabled, but voltage step read from config file is larger than the DC voltage of voltage scan!")
-    #  logging.info("Program will end!")
-    #  sys.exit()
+   # if self.IVEnable == 1 and self.IVVoltSteps > self.DCVoltage:
+   #   logging.error("IV curve measurements are enabled, but voltage step read from config file is larger than the DC voltage of voltage scan!")
+   #   logging.info("Program will end!")
+   #   sys.exit()
 
 
   def init(self):
@@ -245,7 +247,7 @@ class LongTermTest():
       file.write("#Long Term Test - {0}\n".format(time.strftime("%Y_%m_%d %H:%M:%S", self.characTime)))
       file.write("#Scan parameters: DCVoltage={0}V; Polarity={1}; VoltageRange={2}; tbm={3}; writeeachtrigger={4}; maxtime={5}\n".format(self.DCVoltage, self.polarity, self.VoltageRange, self.tbm, self.wet, self.maxtime))
       file.write("#Scan list: {0}\n".format(self.ScanChannelList))
-      file.write("#Time after start(s)\t")
+      file.write("#Time after reference(s)\t")
       for ch in self.ScanChannelList:
         file.write("{0} - U(V)\t".format(self.SensorLabel[(int(ch)%100)-1]))
       file.write("\n")
@@ -255,7 +257,7 @@ class LongTermTest():
     #Insert for all closed channels the value 0 to measurements
     saveList = [0]*(int(self.InitNrScanChan)+1)
     counter1 = 0  #counter over measuredVoltages[]
-    saveList[0] = (float(self.scanTime - self.referenceTime))
+    saveList[0] = (float(self.scanTime - self.diffTime))
     saveList[1] = self.currentVoltage
     for ch in self.ScanChannelList:
       index = self.InitScanChannelList.index(ch)
@@ -301,7 +303,8 @@ class LongTermTest():
       file.write("#Long Term Test - {0}\n".format(time.strftime("%Y_%m_%d %H:%M:%S", self.characTime)))
       file.write("#Scan parameters: DCVoltage={0}V; Polarity={1}; VoltageRange={2}; tbm={3}; writeeachtrigger={4}; maxtime={5}\n".format(self.DCVoltage, self.polarity, self.VoltageRange, self.tbm, self.wet, self.maxtime))
       file.write("#Scan list: {0}\n".format(self.ScanChannelList))
-      file.write("#Time after start(s)\t")
+      file.write("Reference time: {0} \t {1}\n".format(datetime.fromtimestamp(self.diffTime).strftime("%H:%M:%S"), self.diffTime))
+      file.write("#Time after reference(s)\t")
       file.write("Voltage(V)\t")
       for ch in self.ScanChannelList:
         file.write("{0} - I(A)\t".format(self.SensorLabel[(int(ch)%100)-1]))
@@ -317,7 +320,7 @@ class LongTermTest():
 
     counter1 = 0  #counter over measuredVoltages[]
 
-    saveList[0] = (float(self.scanTime - self.referenceTime))
+    saveList[0] = (float(self.scanTime - self.diffTime))
     saveList[1] = self.currentVoltage
     for ch in self.ScanChannelList:
       index = self.InitScanChannelList.index(ch)
@@ -411,7 +414,7 @@ class LongTermTest():
     """coordinate DC voltage scans (triggering events) and when to save data output
 
       Args:
-        * starTime: iterable variable needed for Threading
+        * startTime: time of initializing the first DC voltage scan (formatted as the output of time.time())
         * write: boolean to set if data output will be written to output file
 
       Returns:
@@ -422,18 +425,18 @@ class LongTermTest():
     counterIV = 1
     if not self.checkExit(20):
       self.performOneScan(write)
-      while (self.checkTime()):
+      while (self.checkTime(startTime)):
         timetowait = self.calculateTbm()
         if not self.checkExit(timetowait):
           iv = False
           #if(self.IVEnable == 1):
-            #if (int(counterIV) != int(self.IVSET)):
-             # iv = False
-             # counterIV +=1
-            #else:
-            #  iv = True
-            #  counterIV = 1
-            #  counter = 1
+          #  if (int(counterIV) != int(self.IVSET)):
+          #    iv = False
+          #    counterIV +=1
+          #  else:
+          #    iv = True
+          #    counterIV = 1
+          #    counter = 1
           write = False
           if not iv:
             if (int(counter) != int(self.wet)):
@@ -446,7 +449,7 @@ class LongTermTest():
         else:
           self.exitProgram()
           break
-      if not self.checkTime():
+      if not self.checkTime(startTime):
         self.exitPr = True
         logging.info("Maximum time of scan reached. ")
         self.exitProgram()
@@ -479,7 +482,6 @@ class LongTermTest():
 
     self.firstReachHumLevel() #wait until humidity level is reached
 
-    self.referenceTime = time.time()    #Time of initializing the DC Voltage scan for the first time and reference time for the whole measurement!
     startTime = time.time()
     write = True
     self.initDCVoltScan()
@@ -491,7 +493,7 @@ class LongTermTest():
     self.thread3 = threading.Thread(target=self.waitForInput)
     self.thread4 = threading.Thread(target=self.monitorThread)
     self.thread1.start()
-    self.thread2.start()
+    #self.thread2.start()
     self.thread3.daemon = True  #program will exit if Thread3 is the last remaining thread
     self.thread3.start()
     self.thread4.start()
@@ -507,9 +509,9 @@ class LongTermTest():
       if (not self.thread1.isAlive() and self.exitPr == False):
         logging.error("Long Term Scan Thread seems to have ended unexpectedly!")
         break
-    #  if (not self.thread2.isAlive() and self.exitPr == False):
-    #    logging.error("Humidity Control seems to have ended unexpectedly!")
-    #    break
+      #if (not self.thread2.isAlive() and self.exitPr == False):
+        #logging.error("Humidity Control seems to have ended unexpectedly!")
+        #break
       if (not self.thread3.isAlive() and self.exitPr == False):
         logging.error("Input thread seems to have ended unexpectedly!")
         break
@@ -703,14 +705,17 @@ class LongTermTest():
     logging.getLogger('').addHandler(console)
 
 
-  def checkTime(self):
+  def checkTime(self, TimeStart):
     """check if maximum time of the Long Term scan is already reached
+
+      Args:
+        * TimeStart: start time of the Long Term scan
 
       Returns:
         * True if scan can be continued
         * False if maximum scan time is reached
     """
-    if time.time() > self.referenceTime + self.maxtime*3600:
+    if time.time() > TimeStart + self.maxtime*3600:
       return False
     return True
 
@@ -758,17 +763,14 @@ class LongTermTest():
     """
 
     logging.info("HUMIDITY CONTROL: Starting humidity stabilization program")
-    #startTime = time.time()
+    startTime = time.time()
     file = open(self.HumSaveFile, 'a')
     counter = 0
     while not self.exitPr:
       hum = self.readHum()
-      temp = self.readTemp()
-      file.write("%2.1f" %(time.time()-self.referenceTime))
+      file.write("%2.1f" %(time.time()-startTime))
       file.write("\t")
       file.write(str(hum))
-      file.write("\t")
-      file.write(str(temp))
       file.write("\n")
       if hum > self.humLevel + 1:
         self.DigChannelsWithOutputByte[1][3] = 1
@@ -808,21 +810,12 @@ class LongTermTest():
       Returns:
         * float humidity: humidity level
     """
-    f = open("{0}/humidity".format(self.humMntPath))
-    humidity = float(f.readline())
-    f.close()
+    #f = open("{0}/humidity".format(self.humMntPath))
+    #humidity = float(f.readline())
+    #f.close()
+
+    humidity = float(Path("{0}/humidity".format(self.humMntPath)).read_text())
     return humidity
-
-  def readTemp(self):
-    """read temperature from file stated in the config file
-
-      Returns:
-        * float temperature: temperature
-    """
-    f = open("{0}/temperature".format(self.humMntPath))
-    temperature = float(f.readline())
-    f.close()
-    return temperature
 
 
   def firstReachHumLevel(self):
@@ -851,7 +844,7 @@ class LongTermTest():
       self.KeithleyOccupied = False
       startTime = time.time()
       bool = False
-      while (time.time() - startTime < 120):
+      while (time.time() - startTime < 60):
         currentLevel = self.readHum()
         logging.info("HUMIDITY CONTROL: Current humidity level: {0}%".format(currentLevel))
         if (currentLevel - self.humLevel) <= 0:
