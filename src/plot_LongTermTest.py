@@ -31,7 +31,7 @@ if len(sys.argv) == 4:
     s = [[],[],[],[],[],[],[],[],[],[]]
     limleakcurr = []
     for line in f: #liest 4 Zahlen pro Zeile, ersetzt Komma durch Punkt, sofern vorhanden.
-      time.append( float(line.split()[0].replace(',','.')) )
+      time.append( float(line.split()[0].replace(',','.'))/3600. )
       #s[0].append( float(line.split()[1].replace(',','.')))
       for i in range(0,int(sys.argv[2])):
         s[i].append(1000000*float(line.split()[i+2].replace(',','.')))
@@ -50,7 +50,7 @@ if len(sys.argv) == 4:
   f.close()
 
   # Plotten
-  plt.figure(figsize=(15,10))
+  plt.figure(figsize=(15,9))
   #plt.errorbar(x_value, y_value, xerr=x_error, yerr=y_error, linestyle='None', marker='o', color='black', markersize=5, label='Messwerte')
   #fitlabel='Lineare Regression \n $ y= m \cdot x +c$ \n $m= {} \pm {}$ \n $c= {} \pm {}$'.format(str(m),str(m_error),str(c),str(c_error))
   colorplot = ['blue', 'orange', 'green', 'black', 'purple', 'brown', 'pink', 'gray', 'olive', 'cyan']
@@ -73,7 +73,7 @@ if len(sys.argv) == 4:
 #  plt.plot(time, s10, color='cyan', label='s10')
   plt.legend(loc='best')
   #plt.title(title, size=20)
-  plt.xlabel("Time after scan start (s)", size=15)
+  plt.xlabel("Time after scan start (h)", size=15)
   plt.ylabel("Leakage current ({0}A)".format("u"), size=15)
   plt.grid(True)
   #plt.savefig('plot_{}.png'.format(file), dpi=800)
