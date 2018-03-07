@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import imp
 import configparser
@@ -31,7 +31,7 @@ class LongTermTest():
     """
 
     self._is_running = True
-    #Read settings from config file
+    # Read settings from config file
     self.config = configparser.ConfigParser()
     self.config.read(pathtocfg)
 
@@ -101,21 +101,21 @@ class LongTermTest():
     logging.info("\tmntpath = {0}".format(self.humMntPath))
     logging.info("-------------------------------")
 
-    self.DataFileExist = False;
-    self.DataFileFormat = "txt" #'txt' (separation by tabs) or 'csv' (separation by commas) available
+    self.DataFileExist = False
+    self.DataFileFormat = "txt"  # available dataformats: 'txt' (separation by tabs) or 'csv' (separation by commas)
     self.characTime = time.localtime()
     self.diffTime = time.time()
     self.DataFileName = "LongTermScan-%s.%s" %(time.strftime("%Y_%m_%d-%H_%M_%S", self.characTime), self.DataFileFormat)
     self.LogFileName = "data/LongTermScan-%s.log" %(time.strftime("%Y_%m_%d-%H_%M_%S", self.characTime))
 
-    self.ChannelToOpen = [] #List containing ports to open after each scanning step
-    self.OpenChannels = [] #List containing all opened ports
-    self.ScanChannelList = [] #List of integer numbers of channels
+    self.ChannelToOpen = []     # List containing ports to open after each scanning step
+    self.OpenChannels = []      # List containing all opened ports
+    self.ScanChannelList = []   # List of integer numbers of channels
     self.NrScannedChannels = 0
     self.InitNrScanChan = 0
     self.InitScanChannelList = []
     self.measuredVoltages = []
-    self.R = 400  # R in kOhm
+    self.R = 400                # R in kOhm
 
     if outputdirectory[-1] == "/":
       self.outputdirectory = outputdirectory[:-1]
@@ -151,8 +151,7 @@ class LongTermTest():
         * True if everything worked fine
     """
 
-    #self.initLogger(self.LogFileName)
-    #Open instance of Keithley Control
+    # Open instance of Keithley Control
     self.k = keithley2700(self.SerialPortKeithley, True)
     self.k.init()
 
@@ -187,7 +186,7 @@ class LongTermTest():
         * True if everything worked fine
     """
 
-    #Configure Keithley 2700
+    # Configure Keithley 2700
     self.keithleyOccupiedTime()
     logging.info("Configuring Keithley 2700")
     self.analyseCfgScanChannels()
@@ -196,7 +195,7 @@ class LongTermTest():
     self.KeithleyOccupied = False
 
     logging.info("Configuring iseg T2DP")
-    #Configure isegT2DP
+    # Configure isegT2DP
     self.i.setPolarity(self.VoltChannel, self.polarity)
     self.i.setVoltage(self.VoltChannel, self.DCVoltage)
     self.currentVoltage = self.DCVoltage
@@ -213,7 +212,7 @@ class LongTermTest():
     if iv:
       print("IV test ist not yet implemented.")
     else:
-      #Trigger scan
+      # Trigger scan
       self.scanTime = time.time()
       self.keithleyOccupiedTime()
       self.measuredVoltages = (self.k.trigDCVoltScan(len(self.ScanChannelList), self.R))[0]
@@ -221,7 +220,7 @@ class LongTermTest():
       if write:
         #self.writeVoltagesToFile()
         self.writeCurrentsToFile()
-      #Analyse results
+      # Analyze results
       if self.checkLeakageCurrent():
         if not self.removeChannelsFromScan(): #no more open channels left!
           logging.info("Scan list doesn't contain any more channels. Program will end!")
@@ -241,7 +240,7 @@ class LongTermTest():
     """
 
     os.chdir(self.outputdirectory)
-    #Create Data File if not existant with header lines
+    # Create Data File if not existant with header lines
     if (not self.DataFileExist):
       file = open(self.DataFileName, 'w')
       file.write("#Long Term Test - {0}\n".format(time.strftime("%Y_%m_%d %H:%M:%S", self.characTime)))
@@ -254,9 +253,9 @@ class LongTermTest():
       self.DataFileExist = True
       file.close()
 
-    #Insert for all closed channels the value 0 to measurements
+    # Insert for all closed channels the value 0 to measurements
     saveList = [0]*(int(self.InitNrScanChan)+1)
-    counter1 = 0  #counter over measuredVoltages[]
+    counter1 = 0  # counter over measuredVoltages[]
     saveList[0] = (float(self.scanTime - self.diffTime))
     saveList[1] = self.currentVoltage
     for ch in self.ScanChannelList:
@@ -281,9 +280,7 @@ class LongTermTest():
       else:
         file.write("\n")
     file.close()
-
     os.chdir(self.workDIR)
-
     return True
 
 
@@ -297,7 +294,7 @@ class LongTermTest():
 
     os.chdir(self.outputdirectory)
 
-    #Create CSV File if not existant with header lines
+    # Create CSV File if not existant with header lines
     if (not self.DataFileExist):
       file = open(self.DataFileName, 'w')
       file.write("#Long Term Test - {0}\n".format(time.strftime("%Y_%m_%d %H:%M:%S", self.characTime)))
@@ -313,13 +310,9 @@ class LongTermTest():
       self.DataFileExist = True
       file.close()
 
-    #Insert for all closed channels the value 0 to measurements
+    # Insert for all closed channels the value 0 to measurements
     saveList = [0]*(int(self.InitNrScanChan)+2)
-
-    #self.InitScanChannelList
-
-    counter1 = 0  #counter over measuredVoltages[]
-
+    counter1 = 0  # counter over measuredVoltages[]
     saveList[0] = (float(self.scanTime - self.diffTime))
     saveList[1] = self.currentVoltage
     for ch in self.ScanChannelList:
@@ -349,9 +342,7 @@ class LongTermTest():
       else:
         file.write("\n")
     file.close()
-
     os.chdir(self.workDIR)
-
     return True
 
 
@@ -381,14 +372,12 @@ class LongTermTest():
         * True if everything worked fine
     """
 
-    #Voltage shutdown needed!
+    # Voltage shutdown needed!
     self.i.VoltageShutdown(self.VoltChannel)
 
-    #delete channels with to high current from scan channel list
+    # delete channels with to high current from scan channel list
     for ch in self.ChannelToOpen[::-1]:
-      #print("Channel: ", ch)
       self.updateDigOutChan(self.ScanChannelList[int(ch)])
-      #print(self.ScanChannelList[int(ch)])
       del self.ScanChannelList[int(ch)]
       self.OpenChannels.append(int(ch))
     self.ChannelToOpen = []
@@ -396,11 +385,11 @@ class LongTermTest():
     if (len(self.ScanChannelList) == 0):
       return False
 
-    #create new Keithley readable list of scan channels
-    self.ScanChannels = str(self.ScanChannelList)[1:-1].replace(' ', '')  #delete '[' and ']' at beginning and end of list and space characters
+    # create new Keithley readable list of scan channels
+    self.ScanChannels = str(self.ScanChannelList)[1:-1].replace(' ', '')  # delete '[' and ']' at beginning and end of list and space characters
 
 
-    #initialize DC voltage scan with new list of channels
+    # initialize DC voltage scan with new list of channels
     self.keithleyOccupiedTime()
     self.k.reset()
     self.KeithleyOccupied = False
@@ -480,7 +469,7 @@ class LongTermTest():
         logging.info("USER INPUT: %s" %(HVon))
         break
 
-    self.firstReachHumLevel() #wait until humidity level is reached
+    self.firstReachHumLevel()  # wait until humidity level is reached
 
     startTime = time.time()
     write = True
@@ -494,7 +483,7 @@ class LongTermTest():
     self.thread4 = threading.Thread(target=self.monitorThread)
     self.thread1.start()
     #self.thread2.start()
-    self.thread3.daemon = True  #program will exit if Thread3 is the last remaining thread
+    self.thread3.daemon = True  # program will exit if Thread3 is the last remaining thread
     self.thread3.start()
     self.thread4.start()
 
@@ -522,7 +511,6 @@ class LongTermTest():
         sys.exit()
       else:
         self.exitPr = True
-        #print("SelfExit", self.exitPr)
         self.i.VoltageShutdown(self.VoltChannel)
         self.k.close()
         logging.info("Voltage is shut down and Keithley is reset. However there occured an unexpected end of the program!")
@@ -538,7 +526,7 @@ class LongTermTest():
 
     self.ScanChannelList = []
     if ":" in self.ScanChannels:
-      #Find start and end channel
+      # Find start and end channel
       splitted = self.ScanChannels.split(':')
       try:
         int(splitted[0])
@@ -548,17 +536,17 @@ class LongTermTest():
         raise ValueError("Scan channels read from config file are not integer. Please check your settings")
       startChannel = int(splitted[0])
       endChannel = int(splitted[1])
-      #Calculate number of scan channels
+      # Calculate number of scan channels
       self.NrScannedChannels = endChannel-startChannel+1
-      #Create list with all scan channels named separately
+      # Create list with all scan channels named separately
       self.ScanChannelList = list(range(startChannel, endChannel+1))
       self.ScanChannels = str(self.ScanChannelList)[1:-1].replace(' ', '')  #delete '[' and ']' at beginning and end of list and space characters
 
     elif "," in self.ScanChannels:
-      #Calculate number of scan channels
+      # Calculate number of scan channels
       splitted = self.ScanChannels.split(',')
       self.NrScannedChannels = len(splitted)
-      #Find highest and lowest channel number
+      # Find highest and lowest channel number
       startChannel = 0
       endChannel = 0
       for nr in splitted:
@@ -765,7 +753,6 @@ class LongTermTest():
     logging.info("HUMIDITY CONTROL: Starting humidity stabilization program")
     startTime = time.time()
     file = open(self.HumSaveFile, 'a')
-    counter = 0
     while not self.exitPr:
       hum = self.readHum()
       file.write("%2.1f" %(time.time()-startTime))
@@ -796,9 +783,6 @@ class LongTermTest():
         else:
           self.ValveCurrentlyOpen = False
       time.sleep(2)
-      #if counter == 10:
-      #  self.exitPr = True
-      #counter += 1
     file.close()
     logging.info("HUMIDITY CONTROL: Ending humidity stabilization program")
     return True
@@ -810,9 +794,6 @@ class LongTermTest():
       Returns:
         * float humidity: humidity level
     """
-    #f = open("{0}/humidity".format(self.humMntPath))
-    #humidity = float(f.readline())
-    #f.close()
 
     humidity = float(Path("{0}/humidity".format(self.humMntPath)).read_text())
     return humidity
@@ -873,8 +854,7 @@ class LongTermTest():
         #time.sleep(1)
         #self.exitProgram()
       elif inp == "plot":
-        #print("Plot")
-        os.system("python src/plot_LongTermTest.py {0}/{1} {2} {3} &".format(self.outputdirectory, self.DataFileName, self.InitNrScanChan, 0.001*self.limleakcurr))
+        os.system("python src/plotLongTermTest.py {0}/{1} {2} {3} &".format(self.outputdirectory, self.DataFileName, self.InitNrScanChan, 0.001*self.limleakcurr))
       else:
         print("To plot the leakage current distribution over time type 'plot'. To quit the scan please type 'exit'.")
 

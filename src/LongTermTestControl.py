@@ -21,46 +21,45 @@ class LongTermTestControl():
 
 
   def init(self, outputdirectory, pathtocfg):
-  
+
     """initialize Long Term control software
-    
+
       Args:
-        * str outputdirectory: path to outputdirectory where .log and .txt files will be saved
+        * str outputdirectory: path to outputdirectory where *.log and *.txt
+          files will be saved
         * str pathtocfg: path to config file
-        
     """
-  
-    #initialize everything
+
+    # Define working directory as main GIT repository path
     workDIR = os.getcwd()
     if workDIR.endswith('\src') or workDIR.endswith('/src'):
-      print("ENDS")
       os.chdir("..")
       workDIR = os.getcwd()
     try:
-      os.chdir(outputdirectory) #change to output directory
+      os.chdir(outputdirectory)  # change to output directory
     except FileNotFoundError:
       logging.error("Could not open output directory {0}. Please make sure that the directory already exists!".format(outputdirectory))
+
     self.initLogger(self.LogFileName)
     os.chdir(workDIR)
     self.checkCfgFile(pathtocfg)
 
+    # Initialize Long Term Test class
     self.l = LongTermTest(pathtocfg, outputdirectory, workDIR)
-    #self.l = LongTermTest(pathtocfg, outputdirectory, workDIR)
-    #os.chdir(outputdirectory)
     self.l.init()
 
 
   def initLogger(self, logfile):
-  
+
     """initialize logger
-    
+
       Args:
         * str logfile: name of output log file
-        
-      Logger will create a log file and save the output printed in the shell into it. 
-      It is formatted as "[$(time)] $(levelname) $(message)". 
+
+      Logger will create a log file and save the output printed in the shell into it.
+      It is formatted as "[$(time)] $(levelname) $(message)".
     """
-    
+
     # set up logging to file
     logging.basicConfig(level=logging.DEBUG,
                         format='[%(asctime)s] %(levelname)-8s %(message)s',
@@ -82,18 +81,17 @@ class LongTermTestControl():
 
 
   def checkCfgFile(self, PathToConfigFile):
-    
+
     """check if config file exists
-    
+
       Args:
         * str PathToConfigFile
-        
+
       Raises:
         * FileNotFoundError if path doesn't exist!
     """
-  
-    #Check if config file exists
 
+    # check if config file exists
     if not exists(PathToConfigFile):
       logging.error("Cfg file couldn't be found! Please check if the path {0} is correct.".format(PathToConfigFile))
       logging.info("You can create a default config file with 'createDefaultConfigFile.py'")
@@ -102,18 +100,16 @@ class LongTermTestControl():
 
 
   def start(self):
-    
+
     """start Long Term Software
-    
     """
-    
+
     self.l.LongTerm()
 
 
-
-# main loop
 if __name__=='__main__':
 
+  # Define command line options to be passed to program
   parser = OptionParser("usage: %prog [options]")
   parser.add_option("-d", "--directory", dest="outputdirectory",
                     help="path to directory where the log files will be saved [output]",

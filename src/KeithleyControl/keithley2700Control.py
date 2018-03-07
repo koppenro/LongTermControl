@@ -1,6 +1,8 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
-import sys, time, math
+import sys
+import time
+import math
 from serial import *
 import logging
 
@@ -28,30 +30,19 @@ class keithley2700:
     """
 
     try:
-      #
-      #Open port
-      #
-      #Syntax: serial.Serial(port=None, baudrate=9600, bytesize=EIGHTBITS, parity=PARITY_NONE,
+      # Open port
+      # Syntax: serial.Serial(port=None, baudrate=9600, bytesize=EIGHTBITS, parity=PARITY_NONE,
       #                      stopbits=STOPBITS_ONE, timeout=None, xonxoff=False, rtscts=False,
       #                      writeTimeout=None, dsrdtr=False, interCharTimeout=None)
       self.port = Serial(port=self.port, baudrate=self.baudrate, bytesize=self.bytesize, xonxoff=self.xonxoff)
       self.printout("Opening serial port to Keithley 2700", "info")
 
-  #NOCH ZU TESTEN!!!
-#      self.port.write("STAT:OPER:ENAB?")  #S. 304 im Handbuch 2700
-#      line = self.port.readline()
-#      print line
-
     except:
       self.printout("ValueError! Keithley 2700 port is already claimed or can not be found!", "error")
       raise ValueError("Keithley 2700 port is already claimed or can not be found!")
 
-		# Custom settings
-    # Reset Keithley
-    #self.port.write("*RST\r\n".encode())
-    self.port.write("*RCL 0\r\n".encode())  #restore user saved setup (all digital output channels at '0')
-    # Disable hardware beeper
-    self.port.write(":SYST:BEEP OFF\r\n".encode())
+    self.port.write("*RCL 0\r\n".encode())          # restore user saved setup (all digital output channels at '0')
+    self.port.write(":SYST:BEEP OFF\r\n".encode())  # Disable hardware beeper
     self.printout("Serial port to Keithley 2700 opened", "info")
 
     return True
@@ -150,7 +141,7 @@ class keithley2700:
         * float meas: Measurements in chosen channel
     """
 
-    #Check if range is reasonable
+    # Check if range is reasonable
     if(self.checkRange(keyword, Range)):
       if (keyword == "DCV"):
         self.port.write("FUNC 'VOLT:DC'\r\n".encode())
@@ -161,7 +152,7 @@ class keithley2700:
       elif (keyword == "ACI"):
         self.port.write("FUNC 'CURR:AC'\r\n".encode())
 
-      #Close channel if wanted (only possible for voltage measurements!
+      # Close channel if wanted (only possible for voltage measurements!
       if (keyword == "DCV" or keyword == "ACV"):
         if (nrChannel != None):
           self.closeAnalogChannel(nrChannel)
@@ -169,12 +160,12 @@ class keithley2700:
         if (nrChannel != None):
           self.printout("WARNING: Keithley 7707 Multiplexer cards supports no current measurements in analog channels! No channel will be closed!", "warning")
 
-      #Trigger and readout measurement
+      # Trigger and readout measurement
       self.port.write("READ?\r\n".encode())
       line = self.port.readline()
       print ("readline ", line)
       splitted = line.split(",")
-      return splitted[0][1:-3] #cut off "VDC"/"VAC"/"ADC"/"AAC" at the end
+      return splitted[0][1:-3]  # cut off "VDC"/"VAC"/"ADC"/"AAC" at the end
     else:
       self.printout("No measurement will be done! Please try again and check your settings!", "warning")
       return None
@@ -203,13 +194,13 @@ class keithley2700:
       Keithley 7707 multiplexer card provides four digital I/O channels to be set as input or output ports: 111, 112, 113 and 114.
     """
 
-    #Syntax: set channels 111 to 113 as output: NrChannel = "111:113" and Output=True
+    # Syntax: set channels 111 to 113 as output: NrChannel = "111:113" and Output=True
     if Output:
       self.port.write(("OUTP:DIG:STAT 1, (@%s)\r\n" %(NrChannel)).encode())  # 1 = output port
     else:
       self.port.write(("OUTP:DIG:STAT 0, (@%s)\r\n" %(NrChannel)).encode())  # 0 = input port
 
-    #Read configuration status of all four digital channels
+    # Read configuration status of all four digital channels
     self.port.write(("OUTP:DIG:STAT? (@%s)\r\n" %(NrChannel)).encode())
     line = str(self.port.readline().decode())
     line = line.replace('\r', '')
@@ -224,12 +215,12 @@ class keithley2700:
         * str binaryAddress: binary pattern of states of output channel, e.g. '10011010'
     """
 
-    #Set output format for reading of byte settings in channel to binary
+    # Set output format for reading of byte settings in channel to binary
     self.port.write("OUTP:DIG:FORM BIN, 8\r\n".encode())   # ASC for decimal
 
-    #Set configuration status of bytes in channel
+    # Set configuration status of bytes in channel
     self.port.write(("OUTP:DIG:BYTE #B%s, (@%s)\r\n" %(binaryAddress, NrChannel)).encode())
-    #Read configuration status of bytes in channel
+    # Read configuration status of bytes in channel
     self.port.write(("OUTP:DIG:BYTE? (@%s)\r\n" %(NrChannel)).encode())
     line = str(self.port.readline())
     if boolLog:
@@ -249,7 +240,7 @@ class keithley2700:
         * boolean
     """
 
-    #Set digital outputs to control relay
+    # Set digital outputs to control relay
     if (DigChannelsWithOutputByte != None):
       self.setDigitalIOChannel("{0}:{1}".format(DigChannelsWithOutputByte[0][0], DigChannelsWithOutputByte[1][0]), True)
       binPattern = ""
@@ -264,7 +255,7 @@ class keithley2700:
           binPattern += str(i)
       self.setDigitalOutputByte(DigChannelsWithOutputByte[1][0], binPattern)
 
-    #init DC Voltage scan with analog channels
+    # init DC Voltage scan with analog channels
     if self.checkRange('DCV', VolRange):
       self.port.write("TRAC:CLE\r\n".encode()) # Clear buffer
       self.port.write("INIT:CONT OFF\r\n".encode())  #Disable continuos initiation
@@ -301,11 +292,11 @@ class keithley2700:
         * float[] DCVoltages: list of measured values of all scanned channels in same order as scan
     """
 
-    R = 400 # R in kOhm
+    R = 400     # R in kOhm
     self.port.write("READ?\r\n".encode())
     line = str(self.port.readline())
     line = line[4:-1]
-    #Pick out voltage values and convert to float
+    # Pick out voltage values and convert to float
     splitted = line.split(',')
     DCVoltages = []
     DCCurrents = []
@@ -313,7 +304,6 @@ class keithley2700:
       DCVoltages.append(abs(float(splitted[3*i][0:-3])))
       DCCurrents.append(abs(float(splitted[3*i][0:-3])/(1000.*R)))
     self.printout("Measurement triggered.", "info")
-    #self.printout(DCVoltages, "info")
     self.printout("Measured DC currents: ", "info")
     self.printout(DCCurrents, "info")
     return DCVoltages, DCCurrents
@@ -323,14 +313,9 @@ class keithley2700:
     """reset Keithley2700
     """
 
-    #Clear all error messages
+    # Clear all error messages
     self.port.write("*CLS\r\n".encode())
-    #Reset Keithley
-    #self.port.write("*RST\r\n".encode())
-    self.port.write("*RCL 0\r\n".encode())  #restore user saved setup (all digital output channels at '0')
-    #Load Presettings
-    #self.port.write("STAT:PRES\r\n".encode())
-    #Init custom settings
+    self.port.write("*RCL 0\r\n".encode())  # restore user saved setup (all digital output channels at '0')
     self.port.write(":SYST:BEEP OFF\r\n".encode())
 
 
@@ -338,16 +323,12 @@ class keithley2700:
     """reset Keithley2700 and close serial connection
     """
 
-    #Reset Keithley
-    #self.port.write("*RST\r\n".encode())
-    self.port.write("*RCL 0\r\n".encode())  #restore user saved setup (all digital output channels at '0')
-    #Clear all error messages
+    self.port.write("*RCL 0\r\n".encode())  # restore user saved setup (all digital output channels at '0')
+    # Clear all error messages
     self.port.write("*CLS\r\n".encode())
-    #Load Presettings
-    #self.port.write("STAT:PRES\r\n".encode())
     # Set "LOCAL" mode
     self.port.write(":SYST:KEY 17\r\n".encode())
-    #Close connection
+    # Close connection
     self.port.close()
 
 #  def installPseudoCard(self):
@@ -393,7 +374,6 @@ if __name__=='__main__':
     k.init()
 
     k.setDigitalIOChannel("111:114", True)
-    #k.setDigitalOutputByte("111","11111111")
     k.setDigitalOutputByte("111","11111111")
     k.setDigitalOutputByte("112","00000011")
     input()

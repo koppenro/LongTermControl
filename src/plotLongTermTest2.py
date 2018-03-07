@@ -1,10 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
-#from scipy.odr import *
 import sys
 import os
 
+"""
+    Plot program for Long Term Measurements which creates graphical displays of
+    leakage current data over time and compares it with temperature and humidity
+"""
+
 if len(sys.argv) == 4:
+
+  # Read in leakage current data
   with open(sys.argv[1]) as f:
     f.readline()
     f.readline()
@@ -15,6 +21,7 @@ if len(sys.argv) == 4:
     time = []
     s = [[],[],[],[],[],[],[],[],[],[]]
     limleakcurr = []
+
     for line in f:
       time.append( float(line.split()[0].replace(',','.'))/3600. )
       for i in range(0,int(sys.argv[2])):
@@ -22,6 +29,7 @@ if len(sys.argv) == 4:
       limleakcurr.append(float(sys.argv[3]))
   f.close()
 
+  # Read in humidity data
   humtime = []
   humidity = []
   humidityfile = sys.argv[1][:-4]+"-Humidity.txt"
@@ -31,6 +39,7 @@ if len(sys.argv) == 4:
           humidity.append( float(line.split()[1].replace(',','.')) )
   g.close()
 
+  # Read in temperature data
   temptime = []
   temperature = []
   tempfile = sys.argv[1][:-4]+"-Temperature.txt"
@@ -40,11 +49,8 @@ if len(sys.argv) == 4:
           temperature.append( float(line.split()[1].replace(',','.')) )
   t.close()
 
-  # Plotten
-#  plt.figure(figsize=(15,9))
-
-  # Two subplots, the axes array is 1-d
-  f, axarr = plt.subplots(2, sharex=True, figsize=(15,9))
+  # Plotting
+  f, axarr = plt.subplots(2, sharex=True, figsize=(15,9))   # Create two subplots
   colorplot = ['blue', 'orange', 'green', 'black', 'purple', 'brown', 'pink', 'gray', 'olive', 'cyan']
   for i in range(0, int(sys.argv[2])):
       axarr[0].plot(time, s[i], color=colorplot[i], label='S{0}'.format(i+1), marker='x')
@@ -52,7 +58,6 @@ if len(sys.argv) == 4:
   axarr[0].grid(True)
   axarr[0].legend(loc='best')
   axarr[0].set_ylabel('Leakage current (uA)')
-  #axarr[0].set_title('Sharing X axis')
 
   axarr[1].scatter(humtime, humidity, color='blue', linestyle='-', marker='.')
   axarr[1].set_ylabel('Humidity (%)', color='blue')
@@ -64,17 +69,10 @@ if len(sys.argv) == 4:
   ax2.set_ylabel('Temperature (°C)', color='red')
   ax2.tick_params('y', colors='r')
 
-  plt.savefig(sys.argv[1][:-3]+'pdf')
-
-  #input()
-
-  #os.system("evince --class=test {}.pdf".format(sys.argv[1][:-4]))
-
-
-#  plt.close()
+  #plt.savefig(sys.argv[1][:-3]+'pdf')
+  plt.show()
 
 else:
-  print("Erstes Argument: Pfad zu Textdatei")
-  print("Zweites Argument: Anzahl an Scan Channels")
-  print("Drittes Argument: Grenze des Leckstroms in uA")
-  #print("Falsche Benutzung!")
+  print("First argument: path to .txt file with data")
+  print("Second argument: number of scan channels")
+  print("Third argument: threshold of leakage current in uA")
