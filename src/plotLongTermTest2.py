@@ -32,7 +32,7 @@ if len(sys.argv) == 4:
   # Read in humidity data
   humtime = []
   humidity = []
-  humidityfile = sys.argv[1][:-4]+"-Humidity.txt"
+  humidityfile = sys.argv[1][:-4]+"-HumidityLog.txt"
   with open(humidityfile) as g:
       for line in g:
           humtime.append( float(line.split()[0].replace(',','.'))/3600. )
@@ -42,7 +42,7 @@ if len(sys.argv) == 4:
   # Read in temperature data
   temptime = []
   temperature = []
-  tempfile = sys.argv[1][:-4]+"-Temperature.txt"
+  tempfile = sys.argv[1][:-4]+"-TemperatureLog.txt"
   with open(tempfile) as t:
       for line in t:
           temptime.append( float(line.split()[0].replace(',','.'))/3600. )

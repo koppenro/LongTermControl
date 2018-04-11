@@ -131,6 +131,7 @@ class LongTermTest():
     self.ValveDesiredOpen = False
     self.KeithleyOccupied = False
     self.HumSaveFile = "{0}/LongTermScan-{1}-HumidityLog.txt".format(outputdirectory, time.strftime("%Y_%m_%d-%H_%M_%S", self.characTime))
+    self.TempSaveFile = "{0}/LongTermScan-{1}-TemperatureLog.txt".format(outputdirectory, time.strftime("%Y_%m_%d-%H_%M_%S", self.characTime))
 
     if self.DCVoltage > 300:
       logging.error("No voltages over 300 V allowed! Please check your settings!")
@@ -220,6 +221,7 @@ class LongTermTest():
       if write:
         #self.writeVoltagesToFile()
         self.writeCurrentsToFile()
+        self.SaveTemperature();
       # Analyze results
       if self.checkLeakageCurrent():
         if not self.removeChannelsFromScan(): #no more open channels left!
@@ -482,7 +484,7 @@ class LongTermTest():
     self.thread3 = threading.Thread(target=self.waitForInput)
     self.thread4 = threading.Thread(target=self.monitorThread)
     self.thread1.start()
-    #self.thread2.start()
+    self.thread2.start()
     self.thread3.daemon = True  # program will exit if Thread3 is the last remaining thread
     self.thread3.start()
     self.thread4.start()
@@ -498,9 +500,9 @@ class LongTermTest():
       if (not self.thread1.isAlive() and self.exitPr == False):
         logging.error("Long Term Scan Thread seems to have ended unexpectedly!")
         break
-      #if (not self.thread2.isAlive() and self.exitPr == False):
-        #logging.error("Humidity Control seems to have ended unexpectedly!")
-        #break
+      if (not self.thread2.isAlive() and self.exitPr == False):
+        logging.error("Humidity Control seems to have ended unexpectedly!")
+        break
       if (not self.thread3.isAlive() and self.exitPr == False):
         logging.error("Input thread seems to have ended unexpectedly!")
         break
@@ -729,6 +731,12 @@ class LongTermTest():
     self.i.VoltageShutdown(self.VoltChannel)
     logging.info("Long-Term Test Control has finished. Good bye!")
     self.keithleyOccupiedTime()
+    if (int(self.ScanChannelList[0]/100) == 1):
+      self.k.setDigitalIOChannel("111:112", True)
+      self.k.setDigitalOutputByte(112, "00000000")
+    elif (int(self.ScanChannelList[0]/100) == 2):
+      self.k.setDigitalIOChannel("211:212", True)
+      self.k.setDigitalOutputByte(212, "00000000")
     self.k.close()
     self.KeithleyOccupied = False
 
@@ -747,22 +755,25 @@ class LongTermTest():
 
   # HUMIDITY CONTROL
   def HumidityControl(self):
-    """measure humidity level each 2 seconds and set digital output byte to control valve status
+    """measure humidity level each 3 seconds and set digital output byte to control valve status
     """
 
     logging.info("HUMIDITY CONTROL: Starting humidity stabilization program")
-    startTime = time.time()
+    #startTime = time.time()
+    #file = open(self.HumSaveFile, 'a')
     file = open(self.HumSaveFile, 'a')
     while not self.exitPr:
       hum = self.readHum()
-      file.write("%2.1f" %(time.time()-startTime))
+      file = open(self.HumSaveFile, 'a')
+      file.write("%2.1f" %(time.time()-self.diffTime))
       file.write("\t")
       file.write(str(hum))
       file.write("\n")
-      if hum > self.humLevel + 1:
+      file.close()
+      if hum > self.humLevel + 0.2:
         self.DigChannelsWithOutputByte[1][3] = 1
         self.ValveDesiredOpen = True
-      elif hum < self.humLevel - 1:
+      elif hum < self.humLevel - 0.2:
         self.DigChannelsWithOutputByte[1][3] = 0
         self.ValveDesiredOpen = False
       #print("humidity", hum)
@@ -782,7 +793,7 @@ class LongTermTest():
           self.ValveCurrentlyOpen = True
         else:
           self.ValveCurrentlyOpen = False
-      time.sleep(2)
+      time.sleep(3)
     file.close()
     logging.info("HUMIDITY CONTROL: Ending humidity stabilization program")
     return True
@@ -795,7 +806,9 @@ class LongTermTest():
         * float humidity: humidity level
     """
 
-    humidity = float(Path("{0}/humidity".format(self.humMntPath)).read_text())
+    #print(("{0}/humidity".format(self.humMntPath)))
+    #humidity = float(Path("{0}/humidity".format(self.humMntPath)).read_text())
+    humidity = float(open(str("{0}/humidity".format(self.humMntPath)), "r").read())
     return humidity
 
 
@@ -825,20 +838,45 @@ class LongTermTest():
       self.KeithleyOccupied = False
       startTime = time.time()
       bool = False
-      while (time.time() - startTime < 60):
+      while (time.time() - startTime < 1800):
         currentLevel = self.readHum()
         logging.info("HUMIDITY CONTROL: Current humidity level: {0}%".format(currentLevel))
         if (currentLevel - self.humLevel) <= 0:
           logging.info("HUMIDITY CONTROL: Humidity level sank to the desired level and will be stabilized.")
           bool = True
           break
-        time.sleep(2)
+        time.sleep(3)
       if not bool:
         logging.warning("HUMIDITY CONTROL: Humidity level could not reach desired value. The measurements will be performed with a new humidity level of {0}%!".format(currentLevel))
         self.humLevel = currentLevel
     self.ValveCurrentlyOpen = False
 
     return True
+
+
+  # TEMPERATURE CONTROL
+  def SaveTemperature(self):
+      """Save current temperature value to separate file
+      """
+
+      file = open(self.TempSaveFile, 'a')
+      temp = self.readTemp()
+      file.write("%2.1f" %(self.scanTime-self.diffTime))
+      file.write("\t")
+      file.write(str(temp))
+      file.write("\n")
+      file.close()
+
+
+  def readTemp(self):
+      """read temperature level from file stated in the config file (1 wire sensor mounting path)
+
+        Returns:
+          * float temperature: temperature level
+      """
+
+      temperature = float(open(str("{0}/temperature".format(self.humMntPath)), "r").read())
+      return temperature
 
 
   def waitForInput(self):
@@ -854,7 +892,7 @@ class LongTermTest():
         #time.sleep(1)
         #self.exitProgram()
       elif inp == "plot":
-        os.system("python src/plotLongTermTest.py {0}/{1} {2} {3} &".format(self.outputdirectory, self.DataFileName, self.InitNrScanChan, 0.001*self.limleakcurr))
+        os.system("python3 src/plotLongTermTest2.py {0}/{1} {2} {3} &".format(self.outputdirectory, self.DataFileName, self.InitNrScanChan, 0.001*self.limleakcurr))
       else:
         print("To plot the leakage current distribution over time type 'plot'. To quit the scan please type 'exit'.")
 
