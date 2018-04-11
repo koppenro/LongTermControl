@@ -130,6 +130,7 @@ class LongTermTest():
     self.ValveCurrentlyOpen = False
     self.ValveDesiredOpen = False
     self.KeithleyOccupied = False
+    self.DataFileName = "{0}/{1}".format(self.outputdirectory, self.DataFileName)
     self.HumSaveFile = "{0}/LongTermScan-{1}-HumidityLog.txt".format(outputdirectory, time.strftime("%Y_%m_%d-%H_%M_%S", self.characTime))
     self.TempSaveFile = "{0}/LongTermScan-{1}-TemperatureLog.txt".format(outputdirectory, time.strftime("%Y_%m_%d-%H_%M_%S", self.characTime))
 
@@ -241,7 +242,7 @@ class LongTermTest():
         * True if everything worked fine
     """
 
-    os.chdir(self.outputdirectory)
+    #os.chdir(self.outputdirectory)
     # Create Data File if not existant with header lines
     if (not self.DataFileExist):
       file = open(self.DataFileName, 'w')
@@ -282,7 +283,7 @@ class LongTermTest():
       else:
         file.write("\n")
     file.close()
-    os.chdir(self.workDIR)
+    #os.chdir(self.workDIR)
     return True
 
 
@@ -294,7 +295,7 @@ class LongTermTest():
         * True if everything worked fine
     """
 
-    os.chdir(self.outputdirectory)
+    #os.chdir(self.outputdirectory)
 
     # Create CSV File if not existant with header lines
     if (not self.DataFileExist):
@@ -344,7 +345,7 @@ class LongTermTest():
       else:
         file.write("\n")
     file.close()
-    os.chdir(self.workDIR)
+    #os.chdir(self.workDIR)
     return True
 
 
@@ -892,7 +893,7 @@ class LongTermTest():
         #time.sleep(1)
         #self.exitProgram()
       elif inp == "plot":
-        os.system("python3 src/plotLongTermTest2.py {0}/{1} {2} {3} &".format(self.outputdirectory, self.DataFileName, self.InitNrScanChan, 0.001*self.limleakcurr))
+        os.system("python3 src/plotLongTermTest2.py {0} {1} {2} &".format(self.DataFileName, self.InitNrScanChan, 0.001*self.limleakcurr))
       else:
         print("To plot the leakage current distribution over time type 'plot'. To quit the scan please type 'exit'.")
 
